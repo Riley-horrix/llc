@@ -1,2 +1,9 @@
 # ignore binaries 
+.bsp
+.metals
+.scala-build
+.vscode
+
 out
+llc
+llc-compiler

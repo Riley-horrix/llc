@@ -7,7 +7,7 @@ specifically designed for ease of use and type safety over matrix and vector ope
 ## Compilation
 
 To build the compiler, run `make` in the root directory, and then to compile a file,
-run `./compile <filename>`, or `./compile -h` for options and help.
+run `./llc <filename>`, or `./llc -h` for options and help.
 
 
 ## Testing
