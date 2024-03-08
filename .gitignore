@@ -1,9 +1,9 @@
-# ignore binaries 
+# ignore editor files
 .bsp
 .metals
 .scala-build
 .vscode
 
+# ignore binaries 
 out
 llc
-llc-compiler

@@ -1,7 +1,7 @@
 # The -f flag is needed to override any existing built compiler
 # The --power flag is needed as `package` is an experimental "power user" feature
 all: 
-	scala-cli --power package . -f -o llc-compiler
+	scala-cli --power package . -f -o llc
 
 test:
 	scala-cli test . 
