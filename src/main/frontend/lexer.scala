@@ -1,4 +1,4 @@
-package llc
+package frontend
 
 import parsley.token.Lexer
 import parsley.token.descriptions._
@@ -6,6 +6,7 @@ import parsley.token.descriptions.numeric.PlusSignPresence
 import parsley.token.descriptions.text.EscapeDesc
 import parsley.token.descriptions.text.TextDesc
 import parsley.token.predicate.Unicode
+import parsley.Parsley
 
 object lexer {
 

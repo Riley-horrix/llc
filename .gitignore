@@ -4,6 +4,9 @@
 .scala-build
 .vscode
 
+# ignore top level linal files
+.linal
+
 # ignore binaries 
 out
 llc
