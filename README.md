@@ -1,7 +1,10 @@
 # llc
 
-The llc is a compiler for the linal programming language, a C-style programming language 
+The llc is a compiler designed for the linal programming language, a C extension
 specifically designed for ease of use and type safety over matrix and vector operations.
+
+The llc compiles linal files into executables after translating it into C, and using a 
+user specified C compiler on the result.
 
 
 ## Compilation
@@ -19,7 +22,9 @@ To run the entire testsuite, run `make test`.
 
 
 For lexer unit tests: `make lexer`
+</br>
 For parser unit tests: `make parser`
+</br>
 For semantic analysis tests: `make semantic`
 
 For frontend tests: `make frontend`
