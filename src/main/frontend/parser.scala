@@ -11,7 +11,6 @@ import parsley.Parsley.many
 
 import scala.util.Failure
 import scala.util.Success
-import parsley.internal.deepembedding.backend.Local
 
 object parser {
 
@@ -41,8 +40,8 @@ object parser {
         many("#" ~> "include" ~> parseInclude)
 
     private lazy val parseInclude: Parsley[Include] = 
-        "<" ~> LibInclude(parseIncl) <~ ">" | 
-        "\"" ~> LocalInclude(includeFile) <~ "\"" 
+        "<" ~> LibInclude(inclFile) <~ ">" | 
+        "\"" ~> LocalInclude(inclFile) <~ "\"" 
 
     // private lazy val expression: Parsley[Expression] = {
     //     Add(Number(numb), Number(numb))

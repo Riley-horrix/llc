@@ -43,7 +43,7 @@ object lexer {
       )
     ),
     SpaceDesc.plain.copy(
-      lineCommentStart = "#",
+      lineCommentStart = "//",
       multiLineCommentStart = "/*",
       multiLineCommentEnd = "*/"
     )
@@ -55,7 +55,20 @@ object lexer {
   val implicits = lexer.lexeme.symbol.implicits
   val ident = lexer.lexeme.names.identifier
 
-  val includeFile = parsley.Parsley.many(lexer.lexeme.character.ascii <~ notFollowedBy(implicits.implicitSymbol(">")) <~ notFollowedBy(implicits.implicitSymbol("\"")))
+  private val inclDesc = LexicalDesc(
+    NameDesc.plain.copy(
+        identifierStart = Unicode(c => Character.isLetterOrDigit(c)),
+        identifierLetter = Unicode(c => Character.isLetterOrDigit(c) || c == '/' || c == '.')
+    ),
+    SymbolDesc.plain.copy(),
+    numeric.NumericDesc.plain.copy(),
+    TextDesc.plain.copy(),
+    SpaceDesc.plain.copy()
+  )
+
+  private val inclLexer = new Lexer(inclDesc)
+  
+  val inclFile = inclLexer.lexeme.names.identifier
 
   def fully[A](p: Parsley[A]): Parsley[A] = lexer.fully(p)
 }
