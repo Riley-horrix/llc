@@ -7,6 +7,9 @@
 # ignore top level linal files
 .linal
 
+# ignore top level C files
+.c
+
 # ignore binaries 
 out
 llc

@@ -7,6 +7,7 @@ import parsley.token.descriptions.text.EscapeDesc
 import parsley.token.descriptions.text.TextDesc
 import parsley.token.predicate.Unicode
 import parsley.Parsley
+import parsley.Parsley.notFollowedBy
 
 object lexer {
 
@@ -17,10 +18,8 @@ object lexer {
     ),
     SymbolDesc.plain.copy(
       hardKeywords = Set(
-        "int"
       ),
       hardOperators = Set(
-        "+"
       )
     ),
     numeric.NumericDesc.plain.copy(
@@ -44,9 +43,9 @@ object lexer {
       )
     ),
     SpaceDesc.plain.copy(
-      lineCommentStart = "<>",
-      multiLineCommentStart = "<<",
-      multiLineCommentEnd = ">>"
+      lineCommentStart = "#",
+      multiLineCommentStart = "/*",
+      multiLineCommentEnd = "*/"
     )
   )
   private val lexer = new Lexer(desc)
@@ -55,5 +54,8 @@ object lexer {
   val numb = lexer.lexeme.integer.number 
   val implicits = lexer.lexeme.symbol.implicits
   val ident = lexer.lexeme.names.identifier
+
+  val includeFile = parsley.Parsley.many(lexer.lexeme.character.ascii <~ notFollowedBy(implicits.implicitSymbol(">")) <~ notFollowedBy(implicits.implicitSymbol("\"")))
+
   def fully[A](p: Parsley[A]): Parsley[A] = lexer.fully(p)
 }

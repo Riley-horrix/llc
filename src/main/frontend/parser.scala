@@ -1,14 +1,17 @@
 package frontend
 
-import java.io.File
-
-import parsley.Parsley
 import lexer._
 import ast._
 
+import java.io.File
+
+import parsley.Parsley
 import lexer.implicits.implicitSymbol
+import parsley.Parsley.many
+
 import scala.util.Failure
 import scala.util.Success
+import parsley.internal.deepembedding.backend.Local
 
 object parser {
 
@@ -28,15 +31,20 @@ object parser {
         }
     }
 
-    private lazy val parser: Parsley[LProgram] = {
-        fully(program)
-    }
+    private lazy val parser: Parsley[LProgram] =
+        fully(parseProgram)
 
-    private lazy val program: Parsley[LProgram] = {
-        "main" ~> LProgram(expression)
-    }
+    private lazy val parseProgram: Parsley[LProgram] = 
+        LProgram(parseIncludes)
 
-    private lazy val expression: Parsley[Expression] = {
-        Add(Number(numb), Number(numb))
-    }
+    private lazy val parseIncludes: Parsley[List[Include]] = 
+        many("#" ~> "include" ~> parseInclude)
+
+    private lazy val parseInclude: Parsley[Include] = 
+        "<" ~> LibInclude(parseIncl) <~ ">" | 
+        "\"" ~> LocalInclude(includeFile) <~ "\"" 
+
+    // private lazy val expression: Parsley[Expression] = {
+    //     Add(Number(numb), Number(numb))
+    // }
 }

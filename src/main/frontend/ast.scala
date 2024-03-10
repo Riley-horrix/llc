@@ -5,23 +5,15 @@ import parsley.position.pos
 import parsley.generic.{ErrorBridge, ParserBridge1}
 import parsley.syntax.zipped.Zipped2
 import parsley.generic
+import javax.swing.text.html.HTMLEditorKit.Parser
 
 object ast {
 
-  case class LProgram(expr: Expression)
+  case class LProgram(includes: List[Include])
   
-  
-  sealed trait Expression 
-  
-  sealed trait Atom extends Expression
-  case class Number(numb: BigInt)(val pos: (Int, Int)) extends Atom
-  
-  sealed trait BinaryOperator extends Expression
-  case class Add(lhs: Expression, rhs: Expression)(val pos: (Int, Int)) extends BinaryOperator
-  object Add extends PosParserBridge2[Expression, Expression, Add]
-  
-
-
+  sealed trait Include
+  case class LocalInclude(include: String) extends Include
+  case class LibInclude(include: String) extends Include
   
   trait PosParserBridgeSingleton[+A] extends ErrorBridge {
     def con(pos: (Int, Int)): A
@@ -43,7 +35,8 @@ object ast {
       override final def con(pos: (Int, Int)): (A, B) => C = this.apply(_, _)(pos)
     }
     
-    object LProgram extends ParserBridge1[Expression, LProgram]
-    object Number extends PosParserBridge1[BigInt, Atom]
+    object LProgram extends ParserBridge1[List[Include], LProgram]
     
+    object LocalInclude extends ParserBridge1[String, Include]
+    object LibInclude extends ParserBridge1[String, Include]
   }
