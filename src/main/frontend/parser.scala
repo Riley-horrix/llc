@@ -37,6 +37,6 @@ object parser {
     }
 
     private lazy val expression: Parsley[Expression] = {
-        Add(Int32(int32), Int32(int32))
+        Add(Number(numb), Number(numb))
     }
 }

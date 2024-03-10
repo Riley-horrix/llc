@@ -6,7 +6,7 @@ import frontend._
 
 object Main {
 
-    private final val Usage = "./llc <filename>"
+    private final val Usage = "Usage : ./llc <filename>"
 
     def main(args: Array[String]): Unit = {
         args.headOption match {
