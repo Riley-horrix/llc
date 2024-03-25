@@ -8,6 +8,6 @@ import frontend.ast._
 
 import parsley.Success
 
-object function_test extends AnyFlatSpec {
+class function_test extends AnyFlatSpec {
     behavior of "Function parser"
 }

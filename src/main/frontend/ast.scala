@@ -2,7 +2,7 @@ package frontend
 
 import parsley.Parsley
 import parsley.position.pos
-import parsley.generic.{ErrorBridge, ParserBridge1}
+import parsley.generic.{ErrorBridge, ParserBridge1, ParserBridge3}
 import parsley.syntax.zipped.{Zipped2, Zipped3, Zipped4}
 import parsley.generic
 
@@ -27,8 +27,11 @@ object ast {
   case class FunctionDefinition(funcType: Type, name: String, params: List[FunctionParameter], body: List[Statement])(val pos: Position) extends Definition
 
   sealed trait Type
-  case class MatrixType(matrixType: OtherType, rows: Int, cols: Int)(val pos: Position) extends Type
-  case class OtherType(name: String)(val pos: Position) extends Type
+  sealed trait Primitive extends Type
+
+  case class MatrixType(matrixType: Primitive, rows: Int, cols: Int) extends Type
+  object Int32Type extends Primitive
+  object CharType extends Primitive
 
   sealed trait Statement
   
@@ -42,8 +45,7 @@ object ast {
   object FunctionParameter extends PosParserBridge2[Type, String, FunctionParameter]
   object FunctionDefinition extends PosParserBridge4[Type, String, List[FunctionParameter], List[Statement], FunctionDefinition]
 
-  object MatrixType extends PosParserBridge3[OtherType, Int, Int, MatrixType]
-  object OtherType extends PosParserBridge1[String, OtherType]
+  object MatrixType extends ParserBridge3[Primitive, Int, Int, MatrixType]
 
   // ----------------- Position Parser Bridge Definitions ----------------- //
   

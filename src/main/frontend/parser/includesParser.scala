@@ -7,17 +7,18 @@ import parsley.Parsley
 import lexer.implicits.implicitSymbol
 import parsley.Parsley.{many, some}
 import parsley.character
+import parsley.Success
+import parsley.Failure
 
 object includesParser {
 
-    lazy val parseIncludes: Parsley[List[Include]] = 
-        many("#" ~> "include" ~> parseInclude)
+  lazy val parseInclude: Parsley[Include] = 
+    "include" ~> (
+      "<" ~> LibInclude(parseIncludeFile) <~ ">" | 
+      "\"" ~> LocalInclude(parseIncludeFile) <~ "\"" 
+    )
 
-    private lazy val parseInclude: Parsley[Include] = 
-        "<" ~> LibInclude(parseIncludeFile) <~ ">" | 
-        "\"" ~> LocalInclude(parseIncludeFile) <~ "\"" 
-
-    private lazy val parseIncludeFile: Parsley[String] = 
-        some(character.letterOrDigit | character.oneOf(',','-','.','_')).foldLeft("")(_+_)
+  private lazy val parseIncludeFile: Parsley[String] = 
+    some(character.letterOrDigit | character.oneOf(',','-','.','_')).map((list: List[Char]) => list.foldLeft("")(_+_))
 
 }
