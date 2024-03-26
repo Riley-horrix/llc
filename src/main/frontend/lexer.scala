@@ -51,11 +51,11 @@ object lexer {
   private val lexer = new Lexer(desc)
 
   // TODO - change this to individually handle binary and hex so can be outputted as such.
-  val numb = lexer.lexeme.integer.number 
+  val numb = lexer.lexeme.integer.number
   val implicits = lexer.lexeme.symbol.implicits
   val ident = lexer.lexeme.names.identifier
 
-  val integer32 = lexer.lexeme.integer.number32
+  val integer64 = lexer.lexeme.integer.number64
   val natural32 = lexer.lexeme.natural.number32
 
   def fully[A](p: Parsley[A]): Parsley[A] = lexer.fully(p)

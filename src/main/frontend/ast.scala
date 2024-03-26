@@ -39,7 +39,7 @@ object ast {
   case class Addition(exprL: Expr, exprR: Expr) extends Expr
 
   sealed trait Atom extends Expr
-  case class Int32Literal(value: Int) extends Atom
+  case class IntLiteral(value: Long) extends Atom
   
   // -------------------------- Companion Objects -------------------------- //
   
@@ -55,7 +55,7 @@ object ast {
 
   object Addition extends ParserBridge2[Expr, Expr, Addition]
 
-  object Int32Literal extends ParserBridge1[Int, Int32Literal]
+  object IntLiteral extends ParserBridge1[Long, IntLiteral]
 
   // ----------------- Position Parser Bridge Definitions ----------------- //
   

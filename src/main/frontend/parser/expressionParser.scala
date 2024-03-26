@@ -4,9 +4,7 @@ import ast._
 import lexer._, implicits.implicitSymbol
 
 import parsley.Parsley
-import parsley.expr.precedence
-import parsley.expr.Ops
-import parsley.expr.InfixL
+import parsley.expr.{precedence, Ops, InfixL}
 
 object expressionParser {
     lazy val parseExpression: Parsley[Expr] = 
@@ -14,5 +12,5 @@ object expressionParser {
             Ops(InfixL)(Addition from "+")
         )
     private lazy val atom: Parsley[Expr] = 
-        Int32Literal(integer32)
+        IntLiteral(integer64)
 }
