@@ -10,8 +10,6 @@ import parsley.Parsley
 
 object typeParser {
 
-    case class VarArgs(str: String, exps:Expr*) 
-
     lazy val parseType: Parsley[Type] = 
         matrixType | primitive
 
