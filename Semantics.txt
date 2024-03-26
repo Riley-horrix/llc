@@ -1,0 +1,6 @@
+Semantics of the Linal Progrmaming Language
+
+1. File Structure
+
+1.1 Every Linal project must contain at least one function with the name 'main' with parameters '(void)' 
+    or '(int* <identifier>, char** <identifier>)', the return type of which must be 'int'.

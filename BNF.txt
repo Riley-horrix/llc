@@ -1,1 +1,67 @@
 The BNF for the Linal Language
+
+(x)* ::= Zero or more (x)
+(x)+ ::= One or more (x)
+(x)? ::= Zero or One (x)
+
+[a-z] ::= One letter, >= a && <= z
+
+<linal-file> ::= (<definition>)*
+
+<definition> ::= 
+	<variable-assignment> |
+	<include-statement> |
+	<function-definition> |
+	<replace-defintion> 
+
+<variable-assignment> ::= 
+	<type-definition> <identifier> '=' <expr>
+
+<type-definition> ::= 
+	(<prefix-modifiers>)* <concrete-type> |
+	(<prefix-modifiers>)* <pointer-type> (<postfix-modifiers>)*
+
+<type> ::= <concrete-type> | <pointer-type>
+
+<prefix-modifiers> ::= 'const'
+<postfix-modifiers> ::= 'const'
+
+<concrete-type> ::= 'int' | 'char' | <matrix-type>
+<pointer-type> ::= <type> '*'
+<matrix-type> ::= 'mat<' <type> ',' <natural-number> ',' <natural-number> '>'
+
+<identifier> ::= [a-zA-Z_](a-zA-Z_0-9)*
+
+<expr> ::= 
+	<expr> <binop> <expr> |
+	<unop> <expr> |
+	<atom>
+
+<binop> ::=
+	'+' | '*' | '-'
+
+<unop> ::= '-'
+
+<atom> ::= 
+	<integer> |
+	<identifier> |
+	'(' <expr> ')'
+
+<integer> ::= ('-')? <natural>
+<natural> ::= (1-9)(0-9)*
+
+<include-statement> ::=
+	'import' '<' <std-file> '>' | 
+	'import' '"' <user-file> '"'
+
+<function-definition> ::=
+	'def' <identifier> '(' <params> ')' ':' <type> '{' (<statement>)* '}'
+
+<params> ::= 'void' | (<param-definition>)+
+<param-definition> ::= <type-definition> <identifier>
+
+<statement> ::= 
+	<variable-assignment>
+
+<replace-defintion> ::=
+	'replace' <identifier> <expr>

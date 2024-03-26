@@ -47,6 +47,7 @@ object ast {
   // Expressions
   sealed trait Expr
   sealed trait ArithBinop extends Expr
+  // TODO : Simplify names
   case class Addition(exprL: Expr, exprR: Expr) extends ArithBinop
   case class Subtraction(exprL: Expr, exprR: Expr) extends ArithBinop
   case class Multiplication(exprL: Expr, exprR: Expr) extends ArithBinop
