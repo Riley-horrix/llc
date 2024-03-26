@@ -19,6 +19,9 @@ object lexer {
     ),
     SymbolDesc.plain.copy(
       hardKeywords = Set(
+        "int",
+        "char",
+        "const"
       ),
       hardOperators = Set(
         "+",

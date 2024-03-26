@@ -5,11 +5,12 @@
 .vscode
 
 # ignore top level linal files
-.linal
+*.linal
 
 # ignore top level C files
-.c
+*.c
 
 # ignore binaries 
 out
 llc
+*.out

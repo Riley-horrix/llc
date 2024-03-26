@@ -24,13 +24,23 @@ object ast {
   // Functions
   case class FunctionParameter(paramType: Type, name: String)
   case class FunctionDefinition(funcType: Type, name: String, params: List[FunctionParameter], body: List[Statement]) extends Definition
+  // Definitions
+  case class VariableDefinition(varType: Type, name: String, value: Expr) extends Definition with Statement
 
   // Types
   sealed trait Type
   sealed trait Primitive extends Type
-  case class MatrixType(matrixType: Primitive, rows: Int, cols: Int) extends Type
-  object Int32Type extends Primitive
-  object CharType extends Primitive
+  case class MatrixType(modifiers: List[TypeModifier], matrixType: Primitive, rows: Int, cols: Int) extends Type
+  case class IntType(modifiers: List[TypeModifier], size: IntSize) extends Primitive
+  case class CharType(modifiers: List[TypeModifier]) extends Primitive
+
+  // Int sizes
+  sealed trait IntSize
+  object Size32 extends IntSize
+
+  // Type modifiers
+  sealed trait TypeModifier
+  object Constant extends TypeModifier
 
   sealed trait Statement
 
@@ -60,9 +70,13 @@ object ast {
   // Functions
   object FunctionParameter extends ParserBridge2[Type, String, FunctionParameter]
   object FunctionDefinition extends ParserBridge4[Type, String, List[FunctionParameter], List[Statement], FunctionDefinition]
+  // Definitions
+  object VariableDefinition extends ParserBridge3[Type, String, Expr, VariableDefinition]
 
   // Types
-  object MatrixType extends ParserBridge3[Primitive, Int, Int, MatrixType]
+  object MatrixType extends ParserBridge4[List[TypeModifier], Primitive, Int, Int, MatrixType]
+  object IntType extends ParserBridge2[List[TypeModifier], IntSize, IntType]
+  object CharType extends ParserBridge1[List[TypeModifier], CharType]
 
   // ----- Expressions -----
   // Binops
