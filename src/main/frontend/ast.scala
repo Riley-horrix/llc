@@ -2,7 +2,7 @@ package frontend
 
 import parsley.Parsley
 import parsley.position.pos
-import parsley.generic.{ErrorBridge, ParserBridge1, ParserBridge3}
+import parsley.generic.{ErrorBridge, ParserBridge1, ParserBridge2, ParserBridge3, ParserBridge4}
 import parsley.syntax.zipped.{Zipped2, Zipped3, Zipped4}
 import parsley.generic
 
@@ -13,18 +13,18 @@ object ast {
   // Program elements include any top level Linal program elements, like 
   // includes, #defines, functions etc
   sealed trait ProgramElement
-  case class LinalFile(elements: List[ProgramElement])(val pos: Position)
+  case class LinalFile(elements: List[ProgramElement])
 
   sealed trait Include extends ProgramElement
 
-  case class LocalInclude(include: String)(val pos: Position) extends Include
-  case class LibInclude(include: String)(val pos: Position) extends Include
+  case class LocalInclude(include: String) extends Include
+  case class LibInclude(include: String) extends Include
 
 
   sealed trait Definition extends ProgramElement
 
-  case class FunctionParameter(paramType: Type, name: String)(val pos: Position)
-  case class FunctionDefinition(funcType: Type, name: String, params: List[FunctionParameter], body: List[Statement])(val pos: Position) extends Definition
+  case class FunctionParameter(paramType: Type, name: String)
+  case class FunctionDefinition(funcType: Type, name: String, params: List[FunctionParameter], body: List[Statement]) extends Definition
 
   sealed trait Type
   sealed trait Primitive extends Type
@@ -34,18 +34,28 @@ object ast {
   object CharType extends Primitive
 
   sealed trait Statement
+
+  sealed trait Expr
+  case class Addition(exprL: Expr, exprR: Expr) extends Expr
+
+  sealed trait Atom extends Expr
+  case class Int32Literal(value: Int) extends Atom
   
   // -------------------------- Companion Objects -------------------------- //
   
-  object LinalFile extends PosParserBridge1[List[ProgramElement], LinalFile]
+  object LinalFile extends ParserBridge1[List[ProgramElement], LinalFile]
   
-  object LocalInclude extends PosParserBridge1[String, Include]
-  object LibInclude extends PosParserBridge1[String, Include]
+  object LocalInclude extends ParserBridge1[String, Include]
+  object LibInclude extends ParserBridge1[String, Include]
 
-  object FunctionParameter extends PosParserBridge2[Type, String, FunctionParameter]
-  object FunctionDefinition extends PosParserBridge4[Type, String, List[FunctionParameter], List[Statement], FunctionDefinition]
+  object FunctionParameter extends ParserBridge2[Type, String, FunctionParameter]
+  object FunctionDefinition extends ParserBridge4[Type, String, List[FunctionParameter], List[Statement], FunctionDefinition]
 
   object MatrixType extends ParserBridge3[Primitive, Int, Int, MatrixType]
+
+  object Addition extends ParserBridge2[Expr, Expr, Addition]
+
+  object Int32Literal extends ParserBridge1[Int, Int32Literal]
 
   // ----------------- Position Parser Bridge Definitions ----------------- //
   
