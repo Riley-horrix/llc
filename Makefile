@@ -6,9 +6,6 @@ all:
 test:
 	scala-cli test . 
 
-lexer:
-	scala-cli test . --test-only lexer_test*
-
 parser:
 	scala-cli test . --test-only parser_test*
 
@@ -16,4 +13,4 @@ semantic:
 	scala-cli test . --test only semantic_test*
 
 frontend:
-	scala-cli test . --test-only lexer_test* parser_test* semantic_test*
+	scala-cli test . --test-only parser_test* semantic_test*

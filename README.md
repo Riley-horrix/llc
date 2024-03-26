@@ -21,10 +21,8 @@ from unit tests to integration testing.
 To run the entire testsuite, run `make test`.
 
 
-For lexer unit tests: `make lexer`
-</br>
 For parser unit tests: `make parser`
-</br>
+
 For semantic analysis tests: `make semantic`
 
 For frontend tests: `make frontend`
