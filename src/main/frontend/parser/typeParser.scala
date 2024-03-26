@@ -7,6 +7,7 @@ import lexer.natural32
 
 import parsley.Parsley.pure
 import parsley.Parsley
+import parsley.position
 
 object typeParser {
 
@@ -14,15 +15,18 @@ object typeParser {
         matrixType | primitive
 
     private lazy val matrixType: Parsley[MatrixType] = 
-        MatrixType(modifiers, "mat<" ~> primitive, "," ~> natural32, "," ~> natural32) <~ ">"
+        MatrixType(premodifiers, "mat<" ~> primitive, "," ~> natural32, "," ~> natural32) <~ ">"
 
     private lazy val primitive: Parsley[Primitive] = 
-        PrimitiveTypeDisambiguator(modifiers, 
+        PrimitiveTypeDisambiguator(premodifiers, 
             (
             ("int" as ParseInt32) | 
             ("char" as ParseChar)
             ),
-            modifiers)
-    private lazy val modifiers: Parsley[List[TypeModifier]] = 
-        ("const" as Constant) <::> modifiers | pure(Nil)
+            postmodifiers)
+    private lazy val premodifiers: Parsley[List[TypeModifier]] = 
+        ("const" as Constant) <::> premodifiers | pure(Nil)
+
+    private lazy val postmodifiers: Parsley[List[TypeModifier]] = 
+        ("const" as Constant) <::> postmodifiers | pure(Nil)
 }
