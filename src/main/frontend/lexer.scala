@@ -3,11 +3,12 @@ package frontend
 import parsley.token.Lexer
 import parsley.token.descriptions._
 import parsley.token.descriptions.numeric.PlusSignPresence
-import parsley.token.descriptions.text.EscapeDesc
-import parsley.token.descriptions.text.TextDesc
+import parsley.token.descriptions.text.{EscapeDesc, TextDesc}
 import parsley.token.predicate.Unicode
 import parsley.Parsley
-import parsley.Parsley.notFollowedBy
+import parsley.Parsley.{notFollowedBy, atomic}
+import parsley.character.{char => chr, digit}
+
 
 object lexer {
 
@@ -20,6 +21,9 @@ object lexer {
       hardKeywords = Set(
       ),
       hardOperators = Set(
+        "+",
+        "-",
+        "*"
       )
     ),
     numeric.NumericDesc.plain.copy(
@@ -43,9 +47,9 @@ object lexer {
       )
     ),
     SpaceDesc.plain.copy(
-      lineCommentStart = "//",
-      multiLineCommentStart = "/*",
-      multiLineCommentEnd = "*/"
+      lineCommentStart = "/>",
+      multiLineCommentStart = "/-",
+      multiLineCommentEnd = "-/"
     )
   )
   private val lexer = new Lexer(desc)
@@ -55,7 +59,14 @@ object lexer {
   val implicits = lexer.lexeme.symbol.implicits
   val ident = lexer.lexeme.names.identifier
 
+  // Use this lexer to parse a negate symbol, otherwise it treats (- int) as 
+  // integer(-int) rather than negate(int)
+  val negateSymbol =
+    lexer.lexeme(atomic(chr('-') <~ notFollowedBy(digit)))
+
+  // Integer atom parser
   val integer64 = lexer.lexeme.integer.number64
+  // Used in matrix type definitions
   val natural32 = lexer.lexeme.natural.number32
 
   def fully[A](p: Parsley[A]): Parsley[A] = lexer.fully(p)

@@ -5,12 +5,20 @@ import lexer._, implicits.implicitSymbol
 
 import parsley.Parsley
 import parsley.expr.{precedence, Ops, InfixL}
+import parsley.expr.Prefix
 
 object expressionParser {
-    lazy val parseExpression: Parsley[Expr] = 
-        precedence(atom)(
-            Ops(InfixL)(Addition from "+")
-        )
-    private lazy val atom: Parsley[Expr] = 
-        IntLiteral(integer64)
+
+  def brackets[A](arg: Parsley[A]): Parsley[A] = "(" ~> arg <~ ")"
+
+  lazy val parseExpression: Parsley[Expr] = 
+    precedence(atom)(
+      Ops(Prefix)(Negate from negateSymbol),
+      Ops(InfixL)(Multiplication from "*"),
+      Ops(InfixL)(Addition from "+", Subtraction from "-")
+    )
+    
+  private lazy val atom: Parsley[Expr] = 
+    IntLiteral(integer64) |
+      "(" ~> parseExpression <~ ")"
 }

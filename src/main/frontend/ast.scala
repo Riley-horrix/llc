@@ -15,46 +15,63 @@ object ast {
   sealed trait ProgramElement
   case class LinalFile(elements: List[ProgramElement])
 
+  // Include files
   sealed trait Include extends ProgramElement
-
   case class LocalInclude(include: String) extends Include
   case class LibInclude(include: String) extends Include
 
-
   sealed trait Definition extends ProgramElement
-
+  // Functions
   case class FunctionParameter(paramType: Type, name: String)
   case class FunctionDefinition(funcType: Type, name: String, params: List[FunctionParameter], body: List[Statement]) extends Definition
 
+  // Types
   sealed trait Type
   sealed trait Primitive extends Type
-
   case class MatrixType(matrixType: Primitive, rows: Int, cols: Int) extends Type
   object Int32Type extends Primitive
   object CharType extends Primitive
 
   sealed trait Statement
 
+  // Expressions
   sealed trait Expr
-  case class Addition(exprL: Expr, exprR: Expr) extends Expr
+  sealed trait ArithBinop extends Expr
+  case class Addition(exprL: Expr, exprR: Expr) extends ArithBinop
+  case class Subtraction(exprL: Expr, exprR: Expr) extends ArithBinop
+  case class Multiplication(exprL: Expr, exprR: Expr) extends ArithBinop
 
+  sealed trait Unop extends Expr
+  case class Negate(expr: Expr) extends Unop
+
+  // Atoms
   sealed trait Atom extends Expr
   case class IntLiteral(value: Long) extends Atom
   
   // -------------------------- Companion Objects -------------------------- //
   
+  // File object
   object LinalFile extends ParserBridge1[List[ProgramElement], LinalFile]
   
-  object LocalInclude extends ParserBridge1[String, Include]
-  object LibInclude extends ParserBridge1[String, Include]
+  // Include files
+  object LocalInclude extends ParserBridge1[String, LocalInclude]
+  object LibInclude extends ParserBridge1[String, LibInclude]
 
+  // Functions
   object FunctionParameter extends ParserBridge2[Type, String, FunctionParameter]
   object FunctionDefinition extends ParserBridge4[Type, String, List[FunctionParameter], List[Statement], FunctionDefinition]
 
+  // Types
   object MatrixType extends ParserBridge3[Primitive, Int, Int, MatrixType]
 
+  // ----- Expressions -----
+  // Binops
   object Addition extends ParserBridge2[Expr, Expr, Addition]
-
+  object Subtraction extends ParserBridge2[Expr, Expr, Subtraction]
+  object Multiplication extends ParserBridge2[Expr, Expr, Multiplication]
+  // Unops
+  object Negate extends ParserBridge1[Expr, Negate]
+  // Atoms
   object IntLiteral extends ParserBridge1[Long, IntLiteral]
 
   // ----------------- Position Parser Bridge Definitions ----------------- //
