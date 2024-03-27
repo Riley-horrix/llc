@@ -4,7 +4,6 @@ import ast._
 import typeParser._
 import statementParser._
 import lexer._
-import parser.curlyBraces
 
 import parsley.Parsley
 import parsley.Parsley.{many, pure}

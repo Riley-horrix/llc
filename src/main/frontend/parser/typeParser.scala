@@ -3,7 +3,7 @@ package frontend
 import ast._
 import lexer.implicits.implicitSymbol
 import lexer.natural32
-import llc.llcerror._
+import llcerror._
 
 import parsley.Parsley.pure
 import parsley.Parsley
