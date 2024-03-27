@@ -14,12 +14,12 @@ class statement_test extends AnyFlatSpec {
 
     it should "be able to parse variable definitions" in {
         parseStatements.parse("int x = 10;") should matchPattern {
-            case Success(List(VariableDefinition(IntType(le, Size32), "x", IntLiteral(10)))) =>
+            case Success(List(VariableDefinition(Type(Nil, IntType, Nil), "x", IntLiteral(10)))) =>
         }
 
         val expr: Expr = Multiplication(Subtraction(IntLiteral(10), IntLiteral(4)), IntLiteral(2))
         parseStatements.parse("int var = (10 - 4) * 2;") should matchPattern {
-            case Success(List(VariableDefinition(IntType(le, Size32), "var", expr))) =>
+            case Success(List(VariableDefinition(Type(Nil, IntType, Nil), "var", expr))) =>
         }
     }
 }

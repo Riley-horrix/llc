@@ -28,19 +28,22 @@ object ast {
   case class VariableDefinition(varType: Type, name: String, value: Expr) extends Definition with Statement
 
   // Types
-  sealed trait Type
-  sealed trait Primitive extends Type
-  case class MatrixType(modifiers: List[TypeModifier], matrixType: Primitive, rows: Int, cols: Int) extends Type
-  case class IntType(modifiers: List[TypeModifier], size: IntSize) extends Primitive
-  case class CharType(modifiers: List[TypeModifier]) extends Primitive
+  case class Type(premodifiers: List[TypePreModifier], baseType: SubType, postModifiers: List[TypePostModifier])
+  sealed trait SubType
+  sealed trait BaseType extends SubType
+  object IntType extends BaseType
+  object CharType extends BaseType
+  case class MatrixType(matrixType: Type, rows: Int, cols: Int) extends BaseType
+  case class PointerType(ptr: BaseType, dimension: Int) extends SubType
 
   // Int sizes
   sealed trait IntSize
   object Size32 extends IntSize
 
   // Type modifiers
-  sealed trait TypeModifier
-  object Constant extends TypeModifier
+  sealed trait TypePreModifier
+  sealed trait TypePostModifier
+  object Constant extends TypePreModifier with TypePostModifier
 
   sealed trait Statement
 
@@ -75,9 +78,7 @@ object ast {
   object VariableDefinition extends ParserBridge3[Type, String, Expr, VariableDefinition]
 
   // Types
-  object MatrixType extends ParserBridge4[List[TypeModifier], Primitive, Int, Int, MatrixType]
-  object IntType extends ParserBridge2[List[TypeModifier], IntSize, IntType]
-  object CharType extends ParserBridge1[List[TypeModifier], CharType]
+  object Type extends ParserBridge3[List[TypePreModifier], SubType, List[TypePostModifier], Type]
 
   // ----- Expressions -----
   // Binops

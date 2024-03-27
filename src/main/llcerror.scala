@@ -1,5 +1,5 @@
-// package llc
+package llc
 
-// object llcerror {
-//     type LLCError = StringBuilder
-// }
+object llcerror {
+  final val INTERNAL_ERROR = "An Internal Error Has Occurred! (Apologies)"
+}
