@@ -12,5 +12,9 @@ import parsley.combinator.endBy
 object statementParser {
   lazy val parseStatements: Parsley[List[Statement]] = endBy(parseStatement, ";")
   private lazy val parseStatement: Parsley[Statement] = 
+    parseVariableDefinition |
+    "return" ~> Return(parseExpression)
+    
+  lazy val parseVariableDefinition: Parsley[VariableDefinition] = 
     VariableDefinition(parseType, ident, "=" ~> parseExpression)
 }

@@ -6,15 +6,16 @@ import frontend._
 
 object Main {
 
-    private final val Usage = "Usage : ./llc <filename>"
+  private final val Usage = "Usage : ./llc <filename>"
 
-    def main(args: Array[String]): Unit = {
-        args.headOption match {
-            case None => println(Usage)
-            case Some(filename: String) => parser.parseFile(new File(filename)) match {
-                case Left(err) => println(err)
-                case Right(prog) => println(prog)
-            }
+  def main(args: Array[String]): Unit = {
+    args.headOption match {
+      case None => println(Usage)
+      case Some(filename: String) =>
+        parser.parseFile(new File(filename)) match {
+          case Left(err)   => println(err)
+          case Right(prog) => println(prog)
         }
     }
+  }
 }

@@ -12,13 +12,15 @@ import parsley.Failure
 
 object includesParser {
 
-  lazy val parseInclude: Parsley[Include] = 
+  lazy val parseInclude: Parsley[Include] =
     "include" ~> (
-      "<" ~> LibInclude(parseIncludeFile) <~ ">" | 
-      "\"" ~> LocalInclude(parseIncludeFile) <~ "\"" 
+      "<" ~> LibInclude(parseIncludeFile) <~ ">" |
+        "\"" ~> LocalInclude(parseIncludeFile) <~ "\""
     )
 
-  private lazy val parseIncludeFile: Parsley[String] = 
-    some(character.letterOrDigit | character.oneOf(',','-','.','_')).map((list: List[Char]) => list.foldLeft("")(_+_))
+  private lazy val parseIncludeFile: Parsley[String] =
+    some(character.letterOrDigit | character.oneOf(',', '-', '.', '_')).map(
+      (list: List[Char]) => list.foldLeft("")(_ + _)
+    )
 
 }

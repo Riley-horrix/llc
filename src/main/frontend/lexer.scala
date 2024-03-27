@@ -9,7 +9,6 @@ import parsley.Parsley
 import parsley.Parsley.{notFollowedBy, atomic}
 import parsley.character.{char => chr, digit}
 
-
 object lexer {
 
   private val desc = LexicalDesc(
@@ -30,7 +29,7 @@ object lexer {
       )
     ),
     numeric.NumericDesc.plain.copy(
-        integerNumbersCanBeBinary = true
+      integerNumbersCanBeBinary = true
     ),
     TextDesc.plain.copy(
       escapeSequences = EscapeDesc.plain.copy(
@@ -62,7 +61,7 @@ object lexer {
   val implicits = lexer.lexeme.symbol.implicits
   val ident = lexer.lexeme.names.identifier
 
-  // Use this lexer to parse a negate symbol, otherwise it treats (- int) as 
+  // Use this lexer to parse a negate symbol, otherwise it treats (- int) as
   // integer(-int) rather than negate(int)
   val negateSymbol =
     lexer.lexeme(atomic(chr('-') <~ notFollowedBy(digit)))

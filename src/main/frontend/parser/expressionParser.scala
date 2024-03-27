@@ -11,14 +11,15 @@ object expressionParser {
 
   def brackets[A](arg: Parsley[A]): Parsley[A] = "(" ~> arg <~ ")"
 
-  lazy val parseExpression: Parsley[Expr] = 
+  lazy val parseExpression: Parsley[Expr] =
     precedence(atom)(
       Ops(Prefix)(Negate from negateSymbol),
       Ops(InfixL)(Multiplication from "*"),
       Ops(InfixL)(Addition from "+", Subtraction from "-")
     )
-    
-  private lazy val atom: Parsley[Expr] = 
+
+  private lazy val atom: Parsley[Expr] =
     IntLiteral(integer64) |
+      Ident(ident) |
       "(" ~> parseExpression <~ ")"
 }
