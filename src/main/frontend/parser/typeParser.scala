@@ -15,6 +15,7 @@ import parsley.expr.precedence
 import parsley.expr.Postfix
 import parsley.expr.Ops
 import parsley.errors.combinator._
+import parsley.Parsley.atomic
 
 object typeParser {
 
@@ -64,5 +65,7 @@ object typeParser {
   private lazy val baseType: Parsley[ParsedType] = 
     ("int" as ParsedInt) | 
     ("char" as ParsedChar) |
-    ("mat<" ~> ParsedMatrix(parseType, "," ~> natural32, "," ~> natural32) <~ ">")
+    ("mat<" ~> ParsedMatrix(parseType, "," ~> natural32, "," ~> natural32) <~ ">") |
+    (atomic("vec<") ~> ParsedMatrix(parseType, "," ~> natural32, pure(1)) <~ ">") | 
+    ("vecT<" ~> ParsedMatrix(parseType, pure(1), "," ~> natural32) <~ ">")
 }

@@ -25,6 +25,17 @@ class type_test extends AnyFlatSpec {
     parseType.parse("mat<char, 3, 2>") should matchPattern {case Success(Type(Nil, MatrixType(Type(Nil, CharType, Nil), 3, 2), Nil)) =>} 
   }
 
+  it should "be able to parse vector types" in {
+    parseType.parse("vec<int, 5>") should matchPattern {case Success(Type(Nil, MatrixType(Type(Nil, IntType, Nil), 5, 1), Nil)) =>} 
+    parseType.parse("vec<vec<int, 5>, 3>") should matchPattern {
+      case Success(Type(Nil, MatrixType(Type(Nil, MatrixType(Type(Nil, IntType, Nil), 5, 1), Nil), 3, 1), Nil)) =>
+    } 
+    parseType.parse("vecT<int, 3>") should matchPattern {case Success(Type(Nil, MatrixType(Type(Nil, IntType, Nil), 1, 3), Nil)) =>}
+    parseType.parse("vecT<vec<int, 5>, 3>") should matchPattern {
+      case Success(Type(Nil, MatrixType(Type(Nil, MatrixType(Type(Nil, IntType, Nil), 5, 1), Nil), 1, 3), Nil)) =>
+    }
+  }
+
   it should "be able to parse modifiers" in {
     parseType.parse("const int") should matchPattern {case Success(Type(List(Constant), IntType, Nil)) =>}
     parseType.parse("const char") should matchPattern {case Success(Type(List(Constant), CharType, Nil)) =>}
