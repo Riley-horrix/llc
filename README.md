@@ -25,4 +25,6 @@ For parser unit tests: `make parser`
 
 For semantic analysis tests: `make semantic`
 
+For frontend integration tests: `make integration`
+
 For frontend tests: `make frontend`

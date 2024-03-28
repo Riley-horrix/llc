@@ -49,7 +49,7 @@ object Main {
     }
   }
 
-  private def frontend(file: File): Either[(LLCError, Int), LinalFile] =
+  def frontend(file: File): Either[(LLCError, Int), LinalFile] =
     syntaxAnalysis(file) match {
       case err: Left[_, _] => err
       case Right(prog)     => Right(prog) // TODO : semantic analysis here
