@@ -95,6 +95,7 @@ object ast {
   sealed trait Atom extends Expr
   case class IntLiteral(value: Long) extends Atom
   case class Ident(name: String) extends Atom
+  case class Character(char: Char) extends Atom
 
   // -------------------------- Companion Objects -------------------------- //
 
@@ -135,6 +136,7 @@ object ast {
   // Atoms
   object IntLiteral extends ParserBridge1[Long, IntLiteral]
   object Ident extends ParserBridge1[String, Ident]
+  object Character extends ParserBridge1[Char, Character]
 
   // ----------------- Position Parser Bridge Definitions ----------------- //
 

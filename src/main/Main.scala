@@ -32,7 +32,9 @@ object Main {
           case Left(err) => println(err)
           case Right(file) =>
             frontend(file) match {
-              case Left(err)   => println(err.toString())
+              case Left((err, retVal)) =>
+                println(err.toString());
+                println(s"Returned with exit code: ${retVal}")
               case Right(prog) => // TODO : Backend Here
             }
         }

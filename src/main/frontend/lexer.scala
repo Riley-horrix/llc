@@ -70,6 +70,7 @@ object lexer {
   val integer64 = lexer.lexeme.integer.number64
   // Used in matrix type definitions
   val natural32 = lexer.lexeme.natural.number32
+  val character = lexer.lexeme.character.ascii
 
   def fully[A](p: Parsley[A]): Parsley[A] = lexer.fully(p)
 }

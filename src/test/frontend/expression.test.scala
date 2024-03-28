@@ -140,4 +140,22 @@ class expression_test extends AnyFlatSpec {
           ) =>
     }
   }
+
+  it should "be able to parse characters" in {
+    parseExpression.parse("'c'") should matchPattern {
+      case Success(Character('c')) =>
+    }
+    parseExpression.parse("'\\n'") should matchPattern {
+      case Success(Character('\n')) =>
+    }
+    parseExpression.parse("'\\t'") should matchPattern {
+      case Success(Character('\t')) =>
+    }
+    parseExpression.parse("'\\b'") should matchPattern {
+      case Success(Character('\b')) =>
+    }
+    parseExpression.parse("'\\\"'") should matchPattern {
+      case Success(Character('\"')) =>
+    }
+  }
 }
