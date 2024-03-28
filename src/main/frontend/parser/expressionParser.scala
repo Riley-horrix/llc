@@ -1,6 +1,6 @@
 package frontend
 
-import ast._
+import llc.ast._
 import lexer._, implicits.implicitSymbol
 
 import parsley.Parsley

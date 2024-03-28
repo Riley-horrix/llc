@@ -1,6 +1,6 @@
 package frontend
 
-import ast._
+import llc.ast._
 import lexer.implicits.implicitSymbol
 import lexer.natural32
 import llcerror._

@@ -1,10 +1,9 @@
 # llc
 
-The llc is a compiler for the linal programming language, a C / Java style programming language 
+The llc is a compiler for the linal programming language, a low-level C style programming language 
 specifically designed for ease of use and type safety over matrix and vector operations.
 
-The llc compiles linal files into executables after translating it into C, and using a 
-user specified C compiler on the result.
+The llc is a standalone compiler, designed and written by Riley Horrix
 
 
 ## Compilation

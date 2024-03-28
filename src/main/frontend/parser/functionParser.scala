@@ -1,6 +1,6 @@
 package frontend
 
-import ast._
+import llc.ast._
 import typeParser._
 import statementParser._
 import lexer._
