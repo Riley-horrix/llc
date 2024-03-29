@@ -15,6 +15,7 @@ import parsley.expr.Postfix
 import parsley.expr.Ops
 import parsley.errors.combinator._
 import parsley.Parsley.atomic
+import javax.swing.text.StyledEditorKit.BoldAction
 
 object typeParser {
 
@@ -38,6 +39,15 @@ object typeParser {
       case ptr: ParsedPointer => handleParsedPointer(ptr)
       case parsedType         => translateParsedType(parsedType)
     }
+  }
+
+  private object VectorDisambiguator
+      extends ParserBridge3[Boolean, Type, Int, ParsedMatrix] {
+    def apply(transpose: Boolean, vecType: Type, dim: Int): ParsedMatrix =
+      transpose match {
+        case true  => ParsedMatrix(vecType, 1, dim)
+        case false => ParsedMatrix(vecType, dim, 1)
+      }
   }
 
   private def translateParsedType(parsedType: ParsedType): BaseType =
@@ -100,10 +110,9 @@ object typeParser {
         "," ~> natural32,
         "," ~> natural32
       ) <~ ">") |
-      (atomic("vec<") ~> ParsedMatrix(
-        parseType,
-        "," ~> natural32,
-        pure(1)
-      ) <~ ">") |
-      ("vecT<" ~> ParsedMatrix(parseType, pure(1), "," ~> natural32) <~ ">")
+      ("vec" ~> VectorDisambiguator(
+        ("T" ~> pure(true) | pure(false)),
+        "<" ~> parseType <~ ",",
+        natural32 <~ ">"
+      ))
 }
