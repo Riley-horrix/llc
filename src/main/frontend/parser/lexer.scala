@@ -9,6 +9,7 @@ import parsley.Parsley
 import parsley.Parsley.{notFollowedBy, atomic}
 import parsley.character.{char => chr, digit}
 
+/** A Parsley Lexer object for lexing. */
 object lexer {
 
   private val desc = LexicalDesc(

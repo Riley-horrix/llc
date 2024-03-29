@@ -3,17 +3,26 @@ package frontend
 import llc.ast._
 import llcerror._
 import scope._
+
 import scala.annotation.tailrec
 
 object semantic {
 
   /** Run semantic analysis on a program, either returning a semanitc error, or
-    * scoping information.
+    * scoping and symbol table information. Returns an LLCError object and a
+    * scope.
     */
-  def analyse(program: LinalFile): Either[LLCError, Scope] = program match {
-    case LinalFile(programElements) => ???
+  def analyse(
+      program: LinalFile,
+      scope: Scope = new Scope()
+  ): Either[LLCError, Scope] = program match {
+    case LinalFile(programElements) =>
+      analyseElements(programElements, scope)
   }
 
+  /** Recursively analyse elements from the elements list, passing in the scope
+    * for each.
+    */
   @tailrec
   private def analyseElements(
       elements: List[ProgramElement],
@@ -23,7 +32,7 @@ object semantic {
     case head :: tail =>
       analyseElement(head, scope) match {
         case None      => analyseElements(tail, scope)
-        case Some(err) => Left(err)
+        case Some(err) => Left(err) // TODO : Not fail on first err.
       }
   }
 

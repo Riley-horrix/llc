@@ -12,15 +12,20 @@ import parsley.Failure
 
 object includesParser {
 
+  /** Parse a single include (import) statement. Lib files are specified with
+    * '<filename>', local files are specified with '"path-to-file"'.
+    */
   lazy val parseInclude: Parsley[Include] =
     "include" ~> (
       "<" ~> LibInclude(parseIncludeFile) <~ ">" |
         "\"" ~> LocalInclude(parseIncludeFile) <~ "\""
     )
 
+  /** Parse an include file name into a list of characters, and then fold them
+    * into a string.
+    */
   private lazy val parseIncludeFile: Parsley[String] =
-    some(character.letterOrDigit | character.oneOf(',', '-', '.', '_')).map(
-      (list: List[Char]) => list.foldLeft("")(_ + _)
-    )
+    some(character.noneOf('>', '"'))
+      .map((list: List[Char]) => list.foldLeft("")(_ + _))
 
 }

@@ -9,8 +9,7 @@ import parsley.Parsley.pure
 import parsley.Parsley
 import parsley.position
 
-import parsley.debug, debug._
-import parsley.generic
+import parsley.generic._
 import parsley.expr.precedence
 import parsley.expr.Postfix
 import parsley.expr.Ops
@@ -22,21 +21,20 @@ object typeParser {
   private sealed trait ParsedType
 
   private case class ParsedPointer(ptr: ParsedType) extends ParsedType
-  private object ParsedPointer
-      extends generic.ParserBridge1[ParsedType, ParsedPointer]
+  private object ParsedPointer extends ParserBridge1[ParsedType, ParsedPointer]
 
   private case class ParsedMatrix(matType: Type, rows: Int, cols: Int)
       extends ParsedType
   private object ParsedMatrix
-      extends generic.ParserBridge3[Type, Int, Int, ParsedMatrix]
+      extends ParserBridge3[Type, Int, Int, ParsedMatrix]
 
   private object ParsedInt extends ParsedType
   private object ParsedChar extends ParsedType
   private object ParsedVoidType extends ParsedType
 
   private object TypeDisambiguator
-      extends generic.ParserBridge1[ParsedType, SubType] {
-    def apply(parsedType: ParsedType): SubType = parsedType match {
+      extends ParserBridge1[ParsedType, ActualType] {
+    def apply(parsedType: ParsedType): ActualType = parsedType match {
       case ptr: ParsedPointer => handleParsedPointer(ptr)
       case parsedType         => translateParsedType(parsedType)
     }
@@ -48,7 +46,8 @@ object typeParser {
       case ParsedInt                         => IntType
       case ParsedChar                        => CharType
       case ParsedVoidType                    => VoidType
-      case _: ParsedPointer                  => ???
+      case _: ParsedPointer =>
+        println(INTERNAL_ERROR); sys.exit(INTERNAL_ERROR_TRANSLATE_POINTER)
     }
 
   private def translatePointerType(ptrType: ParsedType): PtrType =
@@ -57,7 +56,8 @@ object typeParser {
       case ParsedInt                         => IntType
       case ParsedChar                        => CharType
       case ParsedVoidType                    => VoidType
-      case _: ParsedPointer                  => ???
+      case _: ParsedPointer =>
+        println(INTERNAL_ERROR); sys.exit(INTERNAL_ERROR_TRANSLATE_POINTER)
     }
 
   private def handleParsedPointer(
@@ -71,19 +71,26 @@ object typeParser {
       }
   }
 
-  lazy val parseType: Parsley[Type] = Type(premodifiers, subType, postmodifiers)
+  /** Parse a single linal type definition. */
+  lazy val parseType: Parsley[Type] =
+    Type(premodifiers, actualType, postmodifiers)
 
+  // Pre and post type modifier keywords.
   private lazy val premodifiers: Parsley[List[TypePreModifier]] =
     ("const" as Constant) <::> premodifiers | pure(Nil)
   private lazy val postmodifiers: Parsley[List[TypePostModifier]] =
     ("const" as Constant) <::> postmodifiers | pure(Nil)
 
-  private lazy val subType: Parsley[SubType] = TypeDisambiguator(
+  /** Parser for the actual type of a variable, this is either a base type, or a
+    * pointer to a base type, or a pointer to a pointer.
+    */
+  private lazy val actualType: Parsley[ActualType] = TypeDisambiguator(
     precedence(baseType)(
       Ops(Postfix)(ParsedPointer from "*")
     )
   )
 
+  /** The parser for a linal base type, i.e. int, char, matrices, etc... */
   private lazy val baseType: Parsley[ParsedType] =
     ("void" as ParsedVoidType) |
       ("int" as ParsedInt) |

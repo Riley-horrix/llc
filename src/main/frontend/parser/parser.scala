@@ -15,6 +15,10 @@ import java.io.File
 
 object parser {
 
+  /** Parse a file, returns either an error in which toString() can be called to
+    * print to console, or returns a LinalFile ast node, containing all of the
+    * elements of the program.
+    */
   def parseFile(file: File): Either[LLCError, LinalFile] = {
     parser.parseFile(file) match {
       case Failure(exception) => Left(FILE_IO_ERROR)
@@ -26,13 +30,15 @@ object parser {
     }
   }
 
+  /** The main parser entry point. */
   private lazy val parser: Parsley[LinalFile] =
     fully(parseProgram)
 
+  /** Parses zero or more program elements. */
   private lazy val parseProgram: Parsley[LinalFile] =
     LinalFile(many(parseProgramElement))
 
-  // TODO : macros / defines
+  /** Parser for a single program element. */
   private lazy val parseProgramElement: Parsley[ProgramElement] =
     parseFunction |
       parseVariableDefinition <~ ";" |

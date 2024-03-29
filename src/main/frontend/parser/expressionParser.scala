@@ -9,8 +9,9 @@ import parsley.expr.Prefix
 
 object expressionParser {
 
-  def brackets[A](arg: Parsley[A]): Parsley[A] = "(" ~> arg <~ ")"
-
+  /** Parses a single expression. This parser uses Parsley's precedence
+    * function, reducing to an atom.
+    */
   lazy val parseExpression: Parsley[Expr] =
     precedence(atom)(
       Ops(Prefix)(Negate from negateSymbol),
@@ -18,6 +19,7 @@ object expressionParser {
       Ops(InfixL)(Addition from "+", Subtraction from "-")
     )
 
+  /** Parses a single linal atom. */
   private lazy val atom: Parsley[Expr] =
     IntLiteral(integer64) |
       Ident(ident) |

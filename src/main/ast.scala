@@ -53,11 +53,11 @@ object ast {
   // Types
   case class Type(
       premodifiers: List[TypePreModifier],
-      baseType: SubType,
+      baseType: ActualType,
       postModifiers: List[TypePostModifier]
   )
-  sealed trait SubType
-  sealed trait BaseType extends SubType
+  sealed trait ActualType
+  sealed trait BaseType extends ActualType
   sealed trait PtrType
   object VoidType extends BaseType with PtrType
   object IntType extends BaseType with PtrType
@@ -65,7 +65,7 @@ object ast {
   case class MatrixType(matrixType: Type, rows: Int, cols: Int)
       extends BaseType
       with PtrType
-  case class PointerType(ptr: PtrType, dimension: Int) extends SubType
+  case class PointerType(ptr: PtrType, dimension: Int) extends ActualType
 
   // Int sizes
   sealed trait IntSize
@@ -119,7 +119,7 @@ object ast {
 
   // Types
   object Type
-      extends ParserBridge3[List[TypePreModifier], SubType, List[
+      extends ParserBridge3[List[TypePreModifier], ActualType, List[
         TypePostModifier
       ], Type]
 
