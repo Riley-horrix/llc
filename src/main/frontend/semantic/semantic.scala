@@ -15,9 +15,9 @@ object semantic {
   def analyse(
       program: LinalFile,
       scope: Scope = new Scope()
-  ): Either[LLCError, Scope] = program match {
+  ): (LLCError, Scope) = program match {
     case LinalFile(programElements) =>
-      analyseElements(programElements, scope)
+      (analyseElements(programElements, scope, new LLCError()), scope)
   }
 
   /** Recursively analyse elements from the elements list, passing in the scope
@@ -26,21 +26,22 @@ object semantic {
   @tailrec
   private def analyseElements(
       elements: List[ProgramElement],
-      scope: Scope
-  ): Either[LLCError, Scope] = elements match {
-    case Nil => Right(scope)
-    case head :: tail =>
-      analyseElement(head, scope) match {
-        case None      => analyseElements(tail, scope)
-        case Some(err) => Left(err) // TODO : Not fail on first err.
-      }
+      scope: Scope,
+      errBuilder: LLCError
+  ): LLCError = elements match {
+    case Nil => errBuilder
+    case head :: tail => {
+      analyseElement(head, scope, errBuilder)
+      analyseElements(tail, scope, errBuilder)
+    }
   }
 
   /** Semantically analyse a single program element in a given scope. */
   private def analyseElement(
       element: ProgramElement,
-      scope: Scope
-  ): Option[LLCError] = element match {
+      scope: Scope,
+      errBuilder: LLCError
+  ): Unit = element match {
     case FunctionDefinition(name, params, funcType, body) => ???
     case VariableDefinition(varType, name, value)         => ???
     case LibInclude(include)                              => ???
