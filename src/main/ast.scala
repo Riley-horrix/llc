@@ -1,5 +1,7 @@
 package llc
 
+import frontend.scope.Scope
+
 import parsley.Parsley
 import parsley.position.pos
 import parsley.generic.{
@@ -19,7 +21,24 @@ object ast {
   // Program elements include any top level Linal program elements, like
   // includes, #defines, functions etc
   sealed trait ProgramElement
-  case class LinalFile(elements: List[ProgramElement])
+  case class LinalFile(elements: List[ProgramElement]) {
+    private var filename: String = "<filename not set>"
+    def getFilename: String = filename
+    def setFilename(file: String) = {
+      this.filename = file
+    }
+  }
+
+  // Trait to describe nodes to which a scope must be attached during semantic analysis.
+  sealed trait ScopedNode {
+    private var scope: Scope = null;
+    def addScope(scope: Scope): Unit = {
+      this.scope = scope
+    }
+    def getScope(): Scope = {
+      this.scope
+    }
+  }
 
   // Include files
   sealed trait Include extends ProgramElement
@@ -45,6 +64,7 @@ object ast {
       funcType: Type,
       body: List[Statement]
   ) extends Definition
+      with ScopedNode
   // Definitions
   case class VariableDefinition(varType: Type, name: String, value: Expr)
       extends Definition

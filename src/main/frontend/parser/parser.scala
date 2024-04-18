@@ -21,11 +21,15 @@ object parser {
     */
   def parseFile(file: File): Either[LLCError, LinalFile] = {
     parser.parseFile(file) match {
-      case Failure(exception) => Left(FILE_IO_ERROR)
+      case Failure(exception) => Left(LLCError(FILE_IO_ERROR, file.getName()))
       case Success(value) =>
         value match {
-          case err: parsley.Failure[_] => Left(err.toString())
-          case parsley.Success(prog)   => Right(prog)
+          case err: parsley.Failure[_] =>
+            Left(LLCError(FILE_IO_ERROR, file.getName())) // TODO
+          case parsley.Success(prog) => {
+
+            Right(prog)
+          }
         }
     }
   }

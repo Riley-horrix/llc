@@ -21,8 +21,8 @@ object expressionParser {
 
   /** Parses a single linal atom. */
   private lazy val atom: Parsley[Expr] =
-    IntLiteral(integer64) |
-      Ident(ident) |
-      Character(character) |
+    IntLiteral(integer64)             |
+      Ident(ident)                    |
+      Character(character)            |
       "(" ~> parseExpression <~ ")"
 }

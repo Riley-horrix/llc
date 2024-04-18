@@ -15,7 +15,7 @@ The BNF for the Linal Language
 	<replace-defintion> 
 
 <variable-assignment> ::= 
-	<type-definition> <identifier> '=' <expr>
+	<type-definition> <identifier> '=' <r-value>
 
 <type-definition> ::= 
 	(<prefix-modifiers>)* <concrete-type> (<postfix-modifiers>)*

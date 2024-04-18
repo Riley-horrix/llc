@@ -33,6 +33,11 @@ object typeParser {
   private object ParsedChar extends ParsedType
   private object ParsedVoidType extends ParsedType
 
+  private final def internal_error_exit: Nothing = {
+    println(LLCError(INTERNAL_ERROR, ""));
+    sys.exit(INTERNAL_ERROR)
+  }
+
   private object TypeDisambiguator
       extends ParserBridge1[ParsedType, ActualType] {
     def apply(parsedType: ParsedType): ActualType = parsedType match {
@@ -56,8 +61,7 @@ object typeParser {
       case ParsedInt                         => IntType
       case ParsedChar                        => CharType
       case ParsedVoidType                    => VoidType
-      case _: ParsedPointer =>
-        println(INTERNAL_ERROR); sys.exit(INTERNAL_ERROR_TRANSLATE_POINTER)
+      case _: ParsedPointer                  => internal_error_exit
     }
 
   private def translatePointerType(ptrType: ParsedType): PtrType =
@@ -66,8 +70,7 @@ object typeParser {
       case ParsedInt                         => IntType
       case ParsedChar                        => CharType
       case ParsedVoidType                    => VoidType
-      case _: ParsedPointer =>
-        println(INTERNAL_ERROR); sys.exit(INTERNAL_ERROR_TRANSLATE_POINTER)
+      case _: ParsedPointer                  => internal_error_exit
     }
 
   private def handleParsedPointer(
@@ -105,14 +108,17 @@ object typeParser {
     ("void" as ParsedVoidType) |
       ("int" as ParsedInt) |
       ("char" as ParsedChar) |
-      ("mat<" ~> ParsedMatrix(
-        parseType,
-        "," ~> natural32,
-        "," ~> natural32
-      ) <~ ">") |
-      ("vec" ~> VectorDisambiguator(
+      matrixType
+
+  private lazy val matrixType: Parsley[ParsedType] =
+    "mat<" ~> ParsedMatrix(
+      parseType,
+      "," ~> natural32,
+      "," ~> natural32
+    ) <~ ">" |
+      "vec" ~> VectorDisambiguator(
         ("T" ~> pure(true) | pure(false)),
         "<" ~> parseType <~ ",",
         natural32 <~ ">"
-      ))
+      )
 }

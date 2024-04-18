@@ -4,20 +4,22 @@ import llc.ast._
 import llcerror._
 import scope._
 
+import functionSemantics.analyseFunction
+
 import scala.annotation.tailrec
 
 object semantic {
 
-  /** Run semantic analysis on a program, either returning a semanitc error, or
-    * scoping and symbol table information. Returns an LLCError object and a
-    * scope.
+  /** Run semantic analysis on a program. Returns on error, an LLCError object,
+    * on success will return a Verbose Linal File Ast Node.
     */
   def analyse(
-      program: LinalFile,
-      scope: Scope = new Scope()
-  ): Either[LLCError, Scope] = program match {
+      program: LinalFile
+  ): Option[LLCError] = program match {
     case LinalFile(programElements) =>
-      analyseElements(programElements, scope)
+      analyseElements(programElements, new Scope())(
+        LLCError(SEMANTIC_ERROR, program.getFilename)
+      )
   }
 
   /** Recursively analyse elements from the elements list, passing in the scope
@@ -26,24 +28,29 @@ object semantic {
   @tailrec
   private def analyseElements(
       elements: List[ProgramElement],
-      scope: Scope
-  ): Either[LLCError, Scope] = elements match {
-    case Nil => Right(scope)
+      globalScope: Scope
+  )(implicit errorBuilder: LLCError): Option[LLCError] = elements match {
+    case Nil => None
     case head :: tail =>
-      analyseElement(head, scope) match {
-        case None      => analyseElements(tail, scope)
-        case Some(err) => Left(err) // TODO : Not fail on first err.
+      analyseElement(head, globalScope) match {
+        case None      => analyseElements(tail, globalScope)
+        case Some(err) => Some(err)
       }
   }
 
   /** Semantically analyse a single program element in a given scope. */
   private def analyseElement(
       element: ProgramElement,
-      scope: Scope
-  ): Option[LLCError] = element match {
-    case FunctionDefinition(name, params, funcType, body) => ???
-    case VariableDefinition(varType, name, value)         => ???
-    case LibInclude(include)                              => ???
-    case LocalInclude(include)                            => ???
+      globalScope: Scope
+  )(implicit errorBuilder: LLCError): Option[LLCError] = {
+    element match {
+      case f: FunctionDefinition => analyseFunction(f, globalScope)
+      case d: VariableDefinition => ???
+      case inc: Include          => ???
+    }
+    errorBuilder.reachedMaxErrors match {
+      case true  => Some(errorBuilder)
+      case false => None
+    }
   }
 }
