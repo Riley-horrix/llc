@@ -105,7 +105,9 @@ object ast {
 
   // Expressions
   sealed trait Expr
-  sealed trait ArithBinop extends Expr
+  sealed trait ArithBinop extends Expr {
+    private final val label = "arithmetic"
+  }
   // TODO : Simplify names
   case class Addition(exprL: Expr, exprR: Expr) extends ArithBinop
   case class Subtraction(exprL: Expr, exprR: Expr) extends ArithBinop
@@ -151,11 +153,20 @@ object ast {
 
   // ----- Expressions -----
   // Binops
-  object Addition extends ParserBridge2[Expr, Expr, Addition]
-  object Subtraction extends ParserBridge2[Expr, Expr, Subtraction]
-  object Multiplication extends ParserBridge2[Expr, Expr, Multiplication]
+  private final def arithmeticLabels = List("arithmetic operation")
+  object Addition extends ParserBridge2[Expr, Expr, Addition] {
+    override def labels: List[String] = arithmeticLabels
+  }
+  object Subtraction extends ParserBridge2[Expr, Expr, Subtraction] {
+    override def labels: List[String] = arithmeticLabels
+  }
+  object Multiplication extends ParserBridge2[Expr, Expr, Multiplication] {
+    override def labels: List[String] = arithmeticLabels
+  }
   // Unops
-  object Negate extends ParserBridge1[Expr, Negate]
+  object Negate extends ParserBridge1[Expr, Negate] {
+    override def labels: List[String] = List("number")
+  }
   // Atoms
   object IntLiteral extends ParserBridge1[Long, IntLiteral]
   object Ident extends ParserBridge2[String, Int, Ident]
