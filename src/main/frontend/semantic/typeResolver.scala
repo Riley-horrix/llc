@@ -1,0 +1,3 @@
+package frontend
+
+object typeResolver {}

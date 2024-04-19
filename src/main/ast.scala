@@ -24,8 +24,8 @@ object ast {
   // Program elements include any top level Linal program elements, like
   // includes, #defines, functions etc
   sealed trait ProgramElement
-  case class LinalFile(elements: List[ProgramElement]) {
-    private var filename: String = "<filename not set>"
+  case class LinalFile(elements: List[ProgramElement]) extends ScopedNode {
+    private var filename: String = "<filename not resolved>"
     def getFilename: String = filename
     def setFilename(file: String) = {
       this.filename = file
