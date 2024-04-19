@@ -128,14 +128,14 @@ class expression_test extends AnyFlatSpec {
   it should "be able to parse identifiers" in {
     parseExpression.parse("x + y + length") should matchPattern {
       case Success(
-            Addition(Addition(Ident("x"), Ident("y")), Ident("length"))
+            Addition(Addition(Ident("x", _), Ident("y", _)), Ident("length", _))
           ) =>
     }
     parseExpression.parse("x - (y * y)") should matchPattern {
       case Success(
             Subtraction(
-              Ident("x"),
-              Multiplication(Ident("y"), Ident("y"))
+              Ident("x", _),
+              Multiplication(Ident("y", _), Ident("y", _))
             )
           ) =>
     }

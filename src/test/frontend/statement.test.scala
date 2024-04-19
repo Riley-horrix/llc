@@ -32,7 +32,7 @@ class statement_test extends AnyFlatSpec {
     parseStatements.parse("char chr = c;") should matchPattern {
       case Success(
             List(
-              VariableDefinition(Type(Nil, CharType, Nil), "chr", Ident("c"))
+              VariableDefinition(Type(Nil, CharType, Nil), "chr", Ident("c", _))
             )
           ) =>
     }
@@ -51,9 +51,9 @@ class statement_test extends AnyFlatSpec {
               VariableDefinition(
                 Type(Nil, IntType, Nil),
                 "x",
-                Subtraction(IntLiteral(10), Ident("y"))
+                Subtraction(IntLiteral(10), Ident("y", _))
               ),
-              Return(Ident("x"))
+              Return(Ident("x", _))
             )
           ) =>
     }

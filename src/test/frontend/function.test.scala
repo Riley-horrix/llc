@@ -20,7 +20,7 @@ class function_test extends AnyFlatSpec {
               "add2",
               List(FunctionParameter(Type(Nil, IntType, Nil), "x", false)),
               Type(Nil, IntType, Nil),
-              List(Return(Addition(Ident("x"), IntLiteral(2))))
+              List(Return(Addition(Ident("x", _), IntLiteral(2))))
             )
           ) =>
     }
@@ -36,7 +36,7 @@ class function_test extends AnyFlatSpec {
                 FunctionParameter(Type(Nil, IntType, Nil), "y", false)
               ),
               Type(Nil, IntType, Nil),
-              List(Return(Addition(Ident("x"), Ident("y"))))
+              List(Return(Addition(Ident("x", _), Ident("y", _))))
             )
           ) =>
     }

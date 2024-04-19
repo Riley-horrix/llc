@@ -14,6 +14,9 @@ import parsley.generic.{
 import parsley.syntax.zipped.{Zipped2, Zipped3, Zipped4}
 import parsley.generic
 
+import collection.mutable
+import java.util.concurrent.atomic.AtomicInteger
+
 object ast {
 
   private type Position = (Int, Int)
@@ -114,7 +117,7 @@ object ast {
   // Atoms
   sealed trait Atom extends Expr
   case class IntLiteral(value: Long) extends Atom
-  case class Ident(name: String) extends Atom
+  case class Ident(name: String, uid: Int) extends Atom
   case class Character(char: Char) extends Atom
 
   // -------------------------- Companion Objects -------------------------- //
@@ -155,8 +158,15 @@ object ast {
   object Negate extends ParserBridge1[Expr, Negate]
   // Atoms
   object IntLiteral extends ParserBridge1[Long, IntLiteral]
-  object Ident extends ParserBridge1[String, Ident]
+  object Ident extends ParserBridge2[String, Int, Ident]
   object Character extends ParserBridge1[Char, Character]
+
+  // ----------------- Identifier Number Generation ------------------ //
+
+  private var currentId: AtomicInteger = new AtomicInteger(0)
+  private var uidMapping: mutable.Map[String, Int] = mutable.Map()
+  def getNextVarId(name: String): Int =
+    uidMapping.getOrElseUpdate(name, currentId.addAndGet(1))
 
   // ----------------- Position Parser Bridge Definitions ----------------- //
 

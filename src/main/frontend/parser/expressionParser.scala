@@ -3,7 +3,7 @@ package frontend
 import llc.ast._
 import lexer._, implicits.implicitSymbol
 
-import parsley.Parsley
+import parsley.Parsley, Parsley.pure
 import parsley.expr.{precedence, Ops, InfixL}
 import parsley.expr.Prefix
 
@@ -21,8 +21,8 @@ object expressionParser {
 
   /** Parses a single linal atom. */
   private lazy val atom: Parsley[Expr] =
-    IntLiteral(integer64)             |
-      Ident(ident)                    |
-      Character(character)            |
+    IntLiteral(integer64) |
+      Ident(ident, pure(getNextVarId())) |
+      Character(character) |
       "(" ~> parseExpression <~ ")"
 }
