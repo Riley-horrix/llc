@@ -2,7 +2,7 @@
 //> using platform jvm
 
 // dependencies
-//> using dep com.github.j-mie6::parsley::5.0.0-M5
+//> using dep com.github.j-mie6::parsley::5.0.0-M6
 //> using test.dep org.scalatest::scalatest::3.2.18
 
 //> using options -deprecation -unchecked -feature

@@ -18,21 +18,15 @@ object lexer {
 
     override def labelSymbol = Map(
       "(" -> Label("opening bracket"),
-      ")" -> LabelAndReason(
-        label = "closing bracket",
-        reason = "unclosed bracket"
-      ),
+      ")" -> LabelAndReason("closing bracket", "unclosed bracket"),
       "[" -> Label("opening square brace"),
-      "]" -> LabelAndReason(
-        label = "closing square brace",
-        reason = "unclosed square brace"
-      ),
+      "]" -> LabelAndReason("closing square brace", "unclosed square brace"),
       ";" -> LabelAndReason(
-        label = "semi-colon",
-        reason = "semicolons needed to separate statements"
+        "semi-colon",
+        "semicolons needed to separate statements"
       ),
       "=" -> LabelAndReason("'='", "missing equals sign"),
-      "," -> LabelAndReason(label = "comma", reason = "missing comma")
+      "," -> LabelAndReason("comma", "missing comma")
     )
     override def labelIntegerUnsignedDecimal: LabelWithExplainConfig = Label(
       "number"

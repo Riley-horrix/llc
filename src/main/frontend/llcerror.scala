@@ -75,8 +75,9 @@ object llcerror {
     private final val expectedSeparator = " | "
     private final val lineSeparator = "\n"
     private final val lineStart = "> "
-    private final val linePointerChar = "^"
-    private final val lineGapChar = " "
+    private final val linePointerChar = '^'
+    private final val linePointerBefore = ' '
+    private final val linePointerAfter = ' '
     override type LineInfo = StringBuilder
     override type UnexpectedLine = StringBuilder
     override type ExpectedLine = StringBuilder
@@ -88,7 +89,7 @@ object llcerror {
     override type ErrorInfoLines = StringBuilder
     override type Item = String
 
-    override def format(
+    override def build(
         pos: Position,
         source: Source,
         lines: ErrorInfoLines
@@ -165,29 +166,42 @@ object llcerror {
 
     // Formats the line after the faulty line of code in the error message that
     // points to where error is.
-    private def formatLinePointer(pointsAt: Int, width: Int): StringBuilder =
-      formatLinePointerRec(pointsAt, width, new StringBuilder())
+    private def formatLinePointer(
+        pointsAt: Int,
+        width: Int,
+        total: Int
+    ): StringBuilder =
+      formatLinePointerRec(pointsAt, width, total, new StringBuilder())
 
     @tailrec
     private def formatLinePointerRec(
         pointsAt: Int,
         width: Int,
+        total: Int,
         sb: StringBuilder
     ): StringBuilder = pointsAt match {
       case 0 =>
         width match {
-          case 0 => sb
+          case 0 =>
+            total match {
+              case 0 => sb
+              case _ =>
+                sb.append(linePointerAfter);
+                formatLinePointerRec(pointsAt, width, total - 1, sb)
+            }
           case _ =>
             sb.append(linePointerChar);
-            formatLinePointerRec(pointsAt, width - 1, sb)
+            formatLinePointerRec(pointsAt, width - 1, total - 1, sb)
         }
       case _ =>
-        sb.append(lineGapChar); formatLinePointerRec(pointsAt - 1, width, sb)
+        sb.append(linePointerBefore);
+        formatLinePointerRec(pointsAt - 1, width, total - 1, sb)
     }
     override def lineInfo(
         line: String,
         linesBefore: Seq[String],
         linesAfter: Seq[String],
+        lineNum: Int,
         errorPointsAt: Int,
         errorWidth: Int
     ): LineInfo = {
@@ -203,7 +217,7 @@ object llcerror {
       sb.append(lineStart).append(line).append(lineSeparator)
       sb.append(lineStart.map(_ => ' '))
         .append("\u001b[0;92m")
-        .append(formatLinePointer(errorPointsAt, errorWidth))
+        .append(formatLinePointer(errorPointsAt, errorWidth, line.length()))
         .append("\u001b[0m")
 
       linesAfter match {
