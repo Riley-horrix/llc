@@ -34,7 +34,7 @@ object Main {
           case Right(file) =>
             frontend(file) match {
               case Left(err) =>
-                println(err.toString());
+                println(err.result());
                 println(s"Returned with exit code: ${err.errorCode}")
               case Right(prog) => // TODO : Backend Here
             }

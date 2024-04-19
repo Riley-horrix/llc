@@ -12,6 +12,7 @@ import parsley.Parsley, Parsley.many
 import scala.util.Failure
 import scala.util.Success
 import java.io.File
+import parsley.errors.ErrorBuilder
 
 object parser {
 
@@ -20,14 +21,14 @@ object parser {
     * elements of the program.
     */
   def parseFile(file: File): Either[LLCError, LinalFile] = {
+    implicit val errorBuilder: ErrorBuilder[LLCError] = new ParserErrorBuilder()
     parser.parseFile(file) match {
       case Failure(exception) => Left(LLCError(FILE_IO_ERROR, file.getName()))
       case Success(value) =>
         value match {
-          case err: parsley.Failure[_] =>
-            Left(LLCError(FILE_IO_ERROR, file.getName())) // TODO
+          case parsley.Failure(error) =>
+            Left(error) // TODO
           case parsley.Success(prog) => {
-
             Right(prog)
           }
         }
