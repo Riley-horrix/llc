@@ -19,10 +19,17 @@ object expressionParser {
       Ops(InfixL)(Addition from "+", Subtraction from "-")
     )
 
+  case class IdentBuilder(name: String)
+  object IdentBuilder extends parsley.generic.ParserBridge1[String, Ident] {
+    def apply(name: String): Ident =
+      Ident(name, getNextVarId(name))
+  }
+
   /** Parses a single linal atom. */
   private lazy val atom: Parsley[Expr] =
     IntLiteral(integer64) |
-      Ident(ident, pure(getNextVarId())) |
+      IdentBuilder(ident) |
+      // Ident(ident, pure(getNextVarId())) |
       Character(character) |
       "(" ~> parseExpression <~ ")"
 }

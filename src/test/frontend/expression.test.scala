@@ -158,4 +158,15 @@ class expression_test extends AnyFlatSpec {
       case Success(Character('\"')) =>
     }
   }
+
+  it should "assign equal uids to variables in the same scope and different uids to different variables" in {
+    parseExpression.parse("varA + varB * varA") should matchPattern {
+      case Success(
+            Addition(
+              Ident("varA", auid1),
+              Multiplication(Ident("varB", buid), Ident("varA", auid2))
+            )
+          ) if (auid1 != buid) && (auid1 == auid2) =>
+    }
+  }
 }
