@@ -6,6 +6,8 @@
 
 # ignore top level linal files
 *.linal
+*.l
+*.lh
 
 # ignore top level C files
 *.c
