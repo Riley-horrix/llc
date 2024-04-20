@@ -8,12 +8,16 @@ import expressionParser._
 
 import parsley.Parsley
 import parsley.combinator.endBy
+import parsley.errors.combinator._
 
 object statementParser {
 
   /** Parses zero or more linal statements, separated and ended with a ';'. */
   lazy val parseStatements: Parsley[List[Statement]] =
-    endBy(parseStatement, ";")
+    endBy(
+      parseStatement,
+      ";"
+    )
 
   /** Parses a single statement, not ended with a ';'. */
   private lazy val parseStatement: Parsley[Statement] =

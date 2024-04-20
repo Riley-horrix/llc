@@ -25,7 +25,7 @@ object lexer {
         "semi-colon",
         "semicolons needed to separate statements"
       ),
-      "=" -> LabelAndReason("'='", "missing equals sign"),
+      "=" -> LabelAndReason("equals sign", "missing equals sign"),
       "," -> LabelAndReason("comma", "missing comma")
     )
     override def labelIntegerUnsignedDecimal: LabelWithExplainConfig = Label(

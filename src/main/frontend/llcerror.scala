@@ -31,8 +31,32 @@ object llcerror {
   private val errorStart: String =
     redText("LLC Error")
 
+  private final val unexpectedStart = "  " + cyanText("unexpected") + " : "
+  private final val expectedStart = "  " + cyanText("expected") + "   : "
+  private final val messageSeparator = "\n"
+  private final val messageStart = "  "
+  private final val expectedSeparator = " | "
+  private final val lineSeparator = "\n"
+  private final val lineStart = "> "
+  private final val linePointerChar = '^'
+  private final val linePointerBefore = ' '
+  private final val linePointerAfter = ' '
+  type LLCErrorInfoLines = StringBuilder
+  type LLCSource = String
+  type LLCPosition = (Int, Int)
+
   private final def redText(str: String) = "\u001b[0;31m" + str + "\u001b[0m"
   private final def cyanText(str: String) = "\u001b[0;96m" + str + "\u001b[0m"
+
+  private def formatCodeError(
+      source: LLCSource,
+      pos: LLCPosition,
+      lines: LLCErrorInfoLines
+  ): ErrorT =
+    new StringBuilder(errorStart)
+      .append(" ")
+      .append(errorIdent("syntax", source, pos))
+      .append(lines)
 
   private def errorIdent(
       errType: String,
@@ -61,6 +85,35 @@ object llcerror {
     override def errorCode: Int = code
   }
 
+  class SemanticError extends LLCError {
+    override def result(): String = ???
+    override def errorCode: Int = SEMANTIC_ERROR
+
+    def newFutureError(err: ErrorT, condition: => Boolean): SemanticError =
+      this
+    def newFutureWarning(err: ErrorT, condition: => Boolean): SemanticError =
+      this
+    def newError(err: ErrorT): SemanticError = this
+    def newWarning(err: ErrorT): SemanticError = this
+  }
+
+  object SemanticErrorBuilder {
+    private var pos: Option[LLCPosition] = None
+    private var source: Option[LLCSource] = None
+    private var lines: Option[LLCErrorInfoLines] = None
+
+    private final val posDefault = (0, 0)
+    private final val srcDefault = "<unknown file>"
+    private final val linesDefault = new StringBuilder()
+
+    def build(): ErrorT =
+      formatCodeError(
+        source.getOrElse(srcDefault),
+        pos.getOrElse(posDefault),
+        lines.getOrElse(linesDefault)
+      )
+  }
+
   case class ParserError(errorMsg: ErrorT) extends LLCError {
     override def result(): String = errorMsg.result()
     override def errorCode: Int = PARSER_ERROR
@@ -68,25 +121,15 @@ object llcerror {
 
   class ParserErrorBuilder extends parsley.errors.ErrorBuilder[LLCError] {
 
-    private final val unexpectedStart = "  " + cyanText("unexpected") + " : "
-    private final val expectedStart = "  " + cyanText("expected") + "   : "
-    private final val messageSeparator = "\n"
-    private final val messageStart = "  "
-    private final val expectedSeparator = " | "
-    private final val lineSeparator = "\n"
-    private final val lineStart = "> "
-    private final val linePointerChar = '^'
-    private final val linePointerBefore = ' '
-    private final val linePointerAfter = ' '
+    override type ErrorInfoLines = LLCErrorInfoLines
+    override type Source = LLCSource
+    override type Position = LLCPosition
     override type LineInfo = StringBuilder
     override type UnexpectedLine = StringBuilder
     override type ExpectedLine = StringBuilder
     override type ExpectedItems = StringBuilder
     override type Messages = StringBuilder
     override type Message = String
-    override type Source = String
-    override type Position = (Int, Int)
-    override type ErrorInfoLines = StringBuilder
     override type Item = String
 
     override def build(
