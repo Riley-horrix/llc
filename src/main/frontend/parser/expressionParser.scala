@@ -6,6 +6,8 @@ import lexer._, implicits.implicitSymbol
 import parsley.Parsley, Parsley.pure
 import parsley.expr.{precedence, Ops, InfixL}
 import parsley.expr.Prefix
+import frontend.llcerror.LLCPosition
+import parsley.position
 
 object expressionParser {
 
@@ -19,16 +21,17 @@ object expressionParser {
       Ops(InfixL)(Addition from "+", Subtraction from "-")
     )
 
-  case class IdentBuilder(name: String)
-  object IdentBuilder extends parsley.generic.ParserBridge1[String, Ident] {
-    def apply(name: String): Ident =
-      Ident(name, getNextVarId(name))
+  case class IdentBuilder(pos: LLCPosition, name: String)
+  object IdentBuilder
+      extends parsley.generic.ParserBridge2[LLCPosition, String, Ident] {
+    def apply(pos: LLCPosition, name: String): Ident =
+      Ident(name, getNextVarId(name))(pos)
   }
 
   /** Parses a single linal atom. */
   private lazy val atom: Parsley[Expr] =
     IntLiteral(integer64) |
-      IdentBuilder(ident) |
+      IdentBuilder(position.pos, ident) |
       // Ident(ident, pure(getNextVarId())) |
       Character(character) |
       "(" ~> parseExpression <~ ")"

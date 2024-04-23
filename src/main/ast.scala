@@ -1,6 +1,7 @@
 package llc
 
 import frontend.scope.Scope
+import frontend.llcerror._
 
 import parsley.Parsley
 import parsley.position.pos
@@ -16,10 +17,11 @@ import parsley.generic
 
 import collection.mutable
 import java.util.concurrent.atomic.AtomicInteger
+import frontend.llcerror.LLCPosition
 
 object ast {
 
-  private type Position = (Int, Int)
+  private type Position = LLCPosition
 
   // Program elements include any top level Linal program elements, like
   // includes, #defines, functions etc
@@ -41,6 +43,10 @@ object ast {
     def getScope(): Scope = {
       this.scope
     }
+  }
+
+  sealed trait PositionedNode {
+    val pos: Position
   }
 
   // Include files
@@ -106,19 +112,25 @@ object ast {
   sealed trait Expr
   sealed trait ArithBinop extends Expr {
     private final val label = "arithmetic"
+    val exprL: Expr
+    val exprR: Expr
   }
   // TODO : Simplify names
   case class Addition(exprL: Expr, exprR: Expr) extends ArithBinop
   case class Subtraction(exprL: Expr, exprR: Expr) extends ArithBinop
   case class Multiplication(exprL: Expr, exprR: Expr) extends ArithBinop
 
-  sealed trait Unop extends Expr
+  sealed trait Unop extends Expr {
+    val expr: Expr
+  }
   case class Negate(expr: Expr) extends Unop
 
   // Atoms
   sealed trait Atom extends Expr
   case class IntLiteral(value: Long) extends Atom
-  case class Ident(name: String, uid: Int) extends Atom
+  case class Ident(name: String, uid: Int)(val pos: Position)
+      extends Atom
+      with PositionedNode
   case class Character(char: Char) extends Atom
 
   // -------------------------- Companion Objects -------------------------- //
@@ -168,7 +180,7 @@ object ast {
   }
   // Atoms
   object IntLiteral extends ParserBridge1[Long, IntLiteral]
-  object Ident extends ParserBridge2[String, Int, Ident]
+  object Ident extends PosParserBridge2[String, Int, Ident]
   object Character extends ParserBridge1[Char, Character]
 
   // ----------------- Identifier Number Generation ------------------ //

@@ -15,10 +15,15 @@ object typeSemantics {
   /** Check the compatability of two types, and returns the casted to type. Else
     * returns Error type.
     */
-  def commonType(aType: Type, bType: Type): Type = ???
+  def commonType(
+      aType: ActualType,
+      bType: ActualType,
+      expr: Expr
+  ): Option[ActualType] = ???
+  def commonType(varType: ActualType, expr: Expr): Option[ActualType] = ???
 
   /** Returns the storage size related to a specific type. */
-  def getSize(varType: Type): TypeSize = varType.baseType match {
+  def getSize(varType: ActualType): TypeSize = varType match {
     case CharType           => Size8
     case IntType            => Size32
     case VoidType           => LLCError.exitGracefully(INTERNAL_ERROR)
@@ -29,7 +34,7 @@ object typeSemantics {
   /** Gets the storage size of a matrix. */
   private def getMatrixSize(matrix: MatrixType): TypeSize = matrix match {
     case MatrixType(matrixType, rows, cols) =>
-      numBytes(getSize(matrixType)) * rows * cols match {
+      numBytes(getSize(matrixType.baseType)) * rows * cols match {
         case numb if numb <= 1 => Size8
         case numb if numb <= 4 => Size32
         case numb if numb <= 8 => Size64
