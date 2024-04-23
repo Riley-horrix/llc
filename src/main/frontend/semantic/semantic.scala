@@ -2,7 +2,7 @@ package frontend
 
 import llc.ast._
 import llcerror._
-import scope._
+import symbolTable._
 
 import functionSemantics.analyseFunction
 

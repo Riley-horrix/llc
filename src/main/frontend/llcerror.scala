@@ -7,21 +7,6 @@ import scala.collection.mutable
 import scala.annotation.tailrec
 
 object llcerror {
-
-  def intersperce[A](
-      coll: Seq[A],
-      foreach: (A => _),
-      between: => Any
-  ): Any =
-    coll match {
-      case head :: (next :: Nil) =>
-        foreach(head); between
-      case head :: next => intersperce(next, foreach, between)
-      case Nil          => null
-    }
-
-  def variable_already_declared(name: String): StringBuilder = ???
-
   type Err = LLCError
 
   final val INTERNAL_ERROR = -1

@@ -2,8 +2,17 @@ package frontend
 
 import llc.ast._
 import llcerror._
+import scope._
 
 import scala.collection.mutable
+import scala.annotation.tailrec
+
+object symbolTableError extends Enumeration {
+  type symbolTableError = Value
+  val VARIABLE_NOT_DECLARED, VARIABLE_ALREADY_DECLARED = Value
+}
+
+import symbolTableError._
 
 object symbolTable {
 
@@ -16,13 +25,17 @@ object symbolTable {
       * true.
       */
     def setIdentType(uid: Int, varType: Type): Boolean =
-      identMapping.put(uid, varType) match {
-        case None        => true
-        case Some(value) => false
+      table.headOption match {
+        case None => LLCError.exitGracefully(INTERNAL_ERROR)
+        case Some(mapping) =>
+          mapping.put(uid, varType) match {
+            case None        => true
+            case Some(value) => false
+          }
       }
 
     def pushNewScope(): SymbolTable = {
-      table = List.empty :: table
+      table = mutable.Map[Int, Type]() :: table
       this
     }
 
@@ -31,8 +44,8 @@ object symbolTable {
         case None        => LLCError.exitGracefully(INTERNAL_ERROR)
         case Some(value) => value
       }
-      table = table.last
-      new Scope(entry)
+      table = table.tail
+      new Scope(entry.toMap)
     }
 
     /** Put a variable declaration into the typemap, returns None on success or
@@ -41,20 +54,38 @@ object symbolTable {
     def declareVariable(
         variable: Ident,
         varType: Type
-    ): Option[StringBuilder] = {
+    ): Option[symbolTableError] = {
       table.headOption match {
         case None => LLCError.exitGracefully(INTERNAL_ERROR)
         case Some(variableMap) =>
           variableMap.put(variable.uid, varType) match {
             case None => None
             case _: Some[Type] =>
-              variable_already_declared(variable.name)
+              Some(VARIABLE_ALREADY_DECLARED)
           }
       }
     }
 
-    def variableType(variable: Int): Type = {
-      searchForVar(variable)
+    def variableType(variable: Ident): Either[symbolTableError, Type] = {
+      searchForVar(variable.uid)
+    }
+
+    private def searchForVar(
+        variable: Int
+    ): Either[symbolTableError, Type] =
+      searchForVarRec(variable, table)
+
+    @tailrec
+    private def searchForVarRec(
+        variable: Int,
+        list: List[mutable.Map[Int, Type]]
+    ): Either[symbolTableError, Type] = list match {
+      case head :: next =>
+        head.get(variable) match {
+          case None          => searchForVarRec(variable, list.tail)
+          case Some(varType) => Right(varType)
+        }
+      case Nil => Left(VARIABLE_NOT_DECLARED)
     }
   }
 }

@@ -90,7 +90,10 @@ object typeParser {
 
   // Pre and post type modifier keywords.
   private lazy val premodifiers: Parsley[List[TypePreModifier]] =
-    ("const" as Constant) <::> premodifiers | pure(Nil)
+    ("const" as Constant) <::> premodifiers |
+      ("row" as RowStored) <::> premodifiers |
+      ("col" as ColStored) <::> premodifiers |
+      pure(Nil)
   private lazy val postmodifiers: Parsley[List[TypePostModifier]] =
     ("const" as Constant) <::> postmodifiers | pure(Nil)
 

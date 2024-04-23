@@ -20,7 +20,7 @@ The BNF for the Linal Language
 <type-definition> ::= 
 	(<prefix-modifiers>)* <concrete-type> (<postfix-modifiers>)*
 
-<prefix-modifiers> ::= 'const'
+<prefix-modifiers> ::= 'const' | 'row' | 'col'
 <postfix-modifiers> ::= 'const'
 
 <concrete-type> ::= 'int' | 'char' | <matrix-type> | <vector-type> | <pointer-type>

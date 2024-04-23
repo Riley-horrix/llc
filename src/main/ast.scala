@@ -79,6 +79,7 @@ object ast {
       baseType: ActualType,
       postModifiers: List[TypePostModifier]
   )
+
   sealed trait ActualType
   sealed trait BaseType extends ActualType
   sealed trait PtrType
@@ -90,14 +91,12 @@ object ast {
       with PtrType
   case class PointerType(ptr: PtrType, dimension: Int) extends ActualType
 
-  // Int sizes
-  sealed trait IntSize
-  object Size32 extends IntSize
-
   // Type modifiers
   sealed trait TypePreModifier
   sealed trait TypePostModifier
   object Constant extends TypePreModifier with TypePostModifier
+  object RowStored extends TypePreModifier
+  object ColStored extends TypePreModifier
 
   // Statements
   sealed trait Statement

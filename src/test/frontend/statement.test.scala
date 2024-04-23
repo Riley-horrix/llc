@@ -21,6 +21,18 @@ class statement_test extends AnyFlatSpec {
           ) =>
     }
 
+    parseStatements.parse("col int col = 10;") should matchPattern {
+      case Success(
+            List(
+              VariableDefinition(
+                Type(List(ColStored), IntType, Nil),
+                "col",
+                IntLiteral(10)
+              )
+            )
+          ) =>
+    }
+
     val expr: Expr =
       Multiplication(Subtraction(IntLiteral(10), IntLiteral(4)), IntLiteral(2))
     parseStatements.parse("int var = (10 - 4) * 2;") should matchPattern {

@@ -5,6 +5,27 @@ Semantics of the Linal Progrmaming Language
 1.1 Every Linal project must contain at least one function with the name 'main' with parameters '(void)' 
     or '(int* <identifier>, char** <identifier>)', the return type of which must be 'int'.
 
+
 2. Types
 
-2.1
+2.1 Types of different storage sizes cannot be freely cast between each other, so must be 
+    explicitly cast to the desired type
+
+    2.1.1 Storage sizes
+        8 byte : void* | type*
+        4 byte : int
+        1 byte : char
+
+    2.1.2 Casting
+        When a casting is executed, if the casted to type is in a smaller storage class
+        than the castee, the most significant bits are essentially removed from the 
+        value.
+        If the casted to type is larger than the castee's type then the value is optionally
+        sign extended, depending on the signness of the casted to type.
+            -   Signed extensions are sign extended
+            -   Unsigned extensions are zero extended
+
+2.2 Non-pointer types of similar storage types can be freely cast between each other
+
+2.3 Pointer types must be explicitly cast in any situation
+        

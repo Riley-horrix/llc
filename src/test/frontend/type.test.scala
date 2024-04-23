@@ -88,6 +88,14 @@ class type_test extends AnyFlatSpec {
             )
           ) =>
     }
+
+    parseType.parse("row char") should matchPattern {
+      case Success(Type(List(RowStored), CharType, Nil)) =>
+    }
+
+    parseType.parse("row col char") should matchPattern {
+      case Success(Type(List(RowStored, ColStored), CharType, Nil)) =>
+    }
   }
 
   it should "be able to parse pointer types" in {
