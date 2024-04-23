@@ -17,7 +17,7 @@ object semantic {
       program: LinalFile
   ): Option[LLCError] = program match {
     case LinalFile(programElements) =>
-      analyseElements(programElements, new Scope())(
+      analyseElements(programElements, new SymbolTable())(
         LLCError(SEMANTIC_ERROR, program.getFilename)
       )
   }
@@ -28,12 +28,12 @@ object semantic {
   @tailrec
   private def analyseElements(
       elements: List[ProgramElement],
-      globalScope: Scope
+      symbolTable: SymbolTable
   )(implicit errorBuilder: LLCError): Option[LLCError] = elements match {
     case Nil => None
     case head :: tail =>
-      analyseElement(head, globalScope) match {
-        case None      => analyseElements(tail, globalScope)
+      analyseElement(head, symbolTable) match {
+        case None      => analyseElements(tail, symbolTable)
         case Some(err) => Some(err)
       }
   }
@@ -41,10 +41,10 @@ object semantic {
   /** Semantically analyse a single program element in a given scope. */
   private def analyseElement(
       element: ProgramElement,
-      globalScope: Scope
+      symbolTable: SymbolTable
   )(implicit errorBuilder: LLCError): Option[LLCError] = {
     element match {
-      case f: FunctionDefinition => analyseFunction(f, globalScope)
+      case f: FunctionDefinition => analyseFunction(f, symbolTable)
       case d: VariableDefinition => ???
       case inc: Include          => ???
     }

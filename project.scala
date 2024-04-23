@@ -1,4 +1,4 @@
-//> using scala 2.13.12
+//> using scala 2.13.13
 //> using platform jvm
 
 // dependencies

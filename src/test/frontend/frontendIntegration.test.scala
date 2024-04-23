@@ -13,7 +13,7 @@ class frontendIntegration_test extends AnyFlatSpec {
 
   behavior of "LLC Frontend"
 
-  ignore should "be able to fail on linal syntax errors" in {
+  it should "be able to fail on linal syntax errors" in {
     val testdir: File = new File(testSuitePath + "syntax")
     val testfiles: List[File] = testdir.listFiles().toList
 
@@ -28,7 +28,7 @@ class frontendIntegration_test extends AnyFlatSpec {
     runTestSuite(testfiles, VALID_FILE) shouldBe true
   }
 
-  ignore should "be able to fail on linal semantic errors" in {
+  it should "be able to fail on linal semantic errors" in {
     val testdir: File = new File(testSuitePath + "semantic")
     val testfiles: List[File] = testdir.listFiles().toList
 

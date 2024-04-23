@@ -2,6 +2,8 @@ package frontend
 
 import parsley.errors.Token
 import parsley.syntax.extension
+
+import scala.collection.mutable
 import scala.annotation.tailrec
 
 object llcerror {
@@ -17,6 +19,8 @@ object llcerror {
       case head :: next => intersperce(next, foreach, between)
       case Nil          => null
     }
+
+  def variable_already_declared(name: String): StringBuilder = ???
 
   type Err = LLCError
 
@@ -51,9 +55,10 @@ object llcerror {
   private def formatCodeError(
       source: LLCSource,
       pos: LLCPosition,
-      lines: LLCErrorInfoLines
+      lines: LLCErrorInfoLines,
+      sb: StringBuilder = new StringBuilder()
   ): ErrorT =
-    new StringBuilder(errorStart)
+    sb.append(errorStart)
       .append(" ")
       .append(errorIdent("syntax", source, pos))
       .append(lines)
@@ -77,46 +82,48 @@ object llcerror {
   abstract class LLCError {
     def reachedMaxErrors: Boolean = false;
     def result(): String
-    def errorCode: Int
+    val errorCode: Int
   }
 
   case class DefaultError(errorMsg: ErrorT, code: Int) extends LLCError {
     override def result(): String = errorMsg.insert(0, errorStart).result()
-    override def errorCode: Int = code
+    override val errorCode: Int = code
   }
 
-  class SemanticError extends LLCError {
-    override def result(): String = ???
-    override def errorCode: Int = SEMANTIC_ERROR
-
-    def newFutureError(err: ErrorT, condition: => Boolean): SemanticError =
-      this
-    def newFutureWarning(err: ErrorT, condition: => Boolean): SemanticError =
-      this
-    def newError(err: ErrorT): SemanticError = this
-    def newWarning(err: ErrorT): SemanticError = this
+  case class SemanticError(errMsg: ErrorT, pos: LLCPosition, src: LLCSource)
+      extends LLCError {
+    override def result(): String = formatCodeError(src, pos, errMsg).toString()
+    def chainResult(err: ErrorT): ErrorT =
+      formatCodeError(src, pos, errMsg, err)
+    override val errorCode: Int = SEMANTIC_ERROR
   }
 
-  object SemanticErrorBuilder {
-    private var pos: Option[LLCPosition] = None
-    private var source: Option[LLCSource] = None
-    private var lines: Option[LLCErrorInfoLines] = None
+  case class SemanticErrors(errors: List[SemanticError]) extends LLCError {
+    val errorCode: Int = SEMANTIC_ERROR
+    override def result(): String = {
+      val sb: StringBuilder = new StringBuilder()
+      errors.foreach((error: SemanticError) => {
+        error.chainResult(sb)
+      })
+      sb.result()
+    }
+  }
 
-    private final val posDefault = (0, 0)
-    private final val srcDefault = "<unknown file>"
-    private final val linesDefault = new StringBuilder()
+  class SemanticErrorBuilder(src: LLCSource) {
+    private var numErrs: Int = 0
+    private val errors: mutable.Seq[SemanticError] =
+      mutable.Seq.empty
+    private val warnings: mutable.Seq[SemanticError] =
+      mutable.Seq.empty
 
-    def build(): ErrorT =
-      formatCodeError(
-        source.getOrElse(srcDefault),
-        pos.getOrElse(posDefault),
-        lines.getOrElse(linesDefault)
-      )
+    def newError(errMsg: ErrorT, pos: LLCPosition): Unit = {
+      // errors.ap
+    }
   }
 
   case class ParserError(errorMsg: ErrorT) extends LLCError {
     override def result(): String = errorMsg.result()
-    override def errorCode: Int = PARSER_ERROR
+    override val errorCode: Int = PARSER_ERROR
   }
 
   class ParserErrorBuilder extends parsley.errors.ErrorBuilder[LLCError] {
@@ -137,12 +144,7 @@ object llcerror {
         source: Source,
         lines: ErrorInfoLines
     ): LLCError =
-      new ParserError(
-        new StringBuilder(errorStart)
-          .append(" ")
-          .append(errorIdent("syntax", source, pos))
-          .append(lines)
-      )
+      new ParserError(formatCodeError(source, pos, lines))
 
     override def pos(line: Int, col: Int): Position = (line, col)
 
@@ -304,22 +306,31 @@ object llcerror {
   }
 
   object LLCError {
-    def apply(identifier: Int, filename: String): LLCError = identifier match {
-      case FILE_IO_ERROR =>
-        new DefaultError(
-          new StringBuilder("A file IO error has occurred!"),
-          identifier
-        )
-      case INTERNAL_ERROR =>
-        new DefaultError(
-          new StringBuilder("An internal error has occurred! (Apologies)"),
-          identifier
-        )
-      case FILE_NOT_FOUND =>
-        new DefaultError(
-          new StringBuilder(s"The file '${filename}'' cannot be found!"),
-          identifier
-        )
+    def apply(identifier: Int, filename: String = "<not specified>"): LLCError =
+      identifier match {
+        case FILE_IO_ERROR =>
+          new DefaultError(
+            new StringBuilder("A file IO error has occurred!"),
+            identifier
+          )
+        case INTERNAL_ERROR =>
+          new DefaultError(
+            new StringBuilder("An internal error has occurred! (Apologies)"),
+            identifier
+          )
+        case FILE_NOT_FOUND =>
+          new DefaultError(
+            new StringBuilder(s"The file '${filename}'' cannot be found!"),
+            identifier
+          )
+      }
+
+    def exitGracefully(
+        identifier: Int,
+        filename: String = "<not specified>"
+    ): Nothing = {
+      println(LLCError(identifier, filename).result())
+      sys.exit(identifier)
     }
   }
 }
