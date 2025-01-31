@@ -28,4 +28,15 @@ Semantics of the Linal Progrmaming Language
 2.2 Non-pointer types of similar storage types can be freely cast between each other
 
 2.3 Pointer types must be explicitly cast in any situation
+
+2.4 The compiler follows a type ordering, so when two different types are met in a single expression, 
+    the compiler will cast the outcome to the highest ordered value.
+
+    Ordering :
+(highest)   Pointers
+            Matrices
+            int
+(lowest)    char
+
+    I.e. <int> + <void*> => <void*>
         

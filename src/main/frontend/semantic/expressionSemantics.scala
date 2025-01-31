@@ -4,7 +4,7 @@ import llc.ast._
 import symbolTable._
 import symbolTableError._
 import llcerror._
-import llc.typeSemantics.commonType
+import llc.typeSemantics.typeCheck
 import frontend.llcerror.SemanticErrorBuilder
 
 object expressionSemantics {
@@ -26,7 +26,7 @@ object expressionSemantics {
     analyseExpression(arithBinop.exprL, globalScope) match {
       case Some(lType) =>
         analyseExpression(arithBinop.exprR, globalScope) match {
-          case Some(rType) => commonType(lType, rType, arithBinop)
+          case Some(rType) => typeCheck(lType, rType, arithBinop)
           case err         => err
         }
       case err => err
@@ -38,7 +38,7 @@ object expressionSemantics {
   )(implicit
       errorBuilder: SemanticErrorBuilder
   ): Option[ActualType] = analyseExpression(unop.expr, globalScope) match {
-    case Some(varType) => commonType(varType, unop)
+    case Some(varType) => typeCheck(varType, unop)
     case err           => err
   }
 
